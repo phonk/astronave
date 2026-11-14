@@ -8,6 +8,8 @@ A two-voice touch synth that runs in your browser, in the spirit of the Buchla M
 
 ![astronave](screenshot.png)
 
+**The full [manual](MANUAL.md)** goes through every control, with a few patches to try.
+
 ## Play
 
 Tap **start**, then touch the keyboard. The vertical position of your finger on a key is **Touch**: lower is stronger, and Touch is also a modulation source.
