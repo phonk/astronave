@@ -823,10 +823,12 @@ process(L,R,n){
   const yR=oR-this.dcxR+0.995*this.dcyR;this.dcxR=oR;this.dcyR=yR;
   let oL2,oR2;
   if(this.limOn){
-   const la=Math.max(Math.abs(yL),Math.abs(yR)),c=this.lceil;if(la>this.bmax)this.bmax=la;
+   // a light saturation first, so loud scenes keep their body and the limiter has little left to do
+   const sL=Math.tanh(yL*0.8)*1.25,sR=Math.tanh(yR*0.8)*1.25;
+   const la=Math.max(Math.abs(sL),Math.abs(sR)),c=this.lceil;if(la>this.bmax)this.bmax=la;
    if(++this.bc>=this.BL){this.bp[this.bi]=this.bmax;this.bi=(this.bi+1)%this.nb;this.bmax=0;this.bc=0;let pk=0;for(let j=0;j<this.nb;j++)if(this.bp[j]>pk)pk=this.bp[j];this.ltg=pk>c?c/pk:1;}
    const tg=Math.min(this.ltg,la>c?c/la:1);this.lg=tg<this.lg?this.latt*this.lg+(1-this.latt)*tg:this.lrel*this.lg+(1-this.lrel)*tg;
-   const LM=this.LN-1,lw=this.lw;this.ll[0][lw&LM]=yL;this.ll[1][lw&LM]=yR;oL2=this.ll[0][(lw-this.LA)&LM]*this.lg;oR2=this.ll[1][(lw-this.LA)&LM]*this.lg;this.lw=lw+1;
+   const LM=this.LN-1,lw=this.lw;this.ll[0][lw&LM]=sL;this.ll[1][lw&LM]=sR;oL2=this.ll[0][(lw-this.LA)&LM]*this.lg;oR2=this.ll[1][(lw-this.LA)&LM]*this.lg;this.lw=lw+1;
    oL2=oL2>c?c:oL2<-c?-c:oL2;oR2=oR2>c?c:oR2<-c?-c:oR2;
    const gr=1-this.lg;if(gr>this.lgr)this.lgr=gr;
   }else{oL2=Math.tanh(yL);oR2=Math.tanh(yR);}
