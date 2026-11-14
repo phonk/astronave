@@ -130,7 +130,7 @@ button{font:inherit;color:inherit}
 .chip.gate{font-size:9px;gap:4px}
 
 /* second row: random/mod, MARF, patch */
-.cells2{display:grid;grid-template-columns:minmax(0,190fr) minmax(0,440fr) minmax(0,390fr);border-top:1px solid var(--navy)}
+.cells2{display:grid;grid-template-columns:minmax(0,180fr) minmax(0,400fr) minmax(0,440fr);border-top:1px solid var(--navy)}
 .cells2>.strip:last-child{border-right:0}
 .mtop{display:flex;flex-wrap:wrap;align-items:center;gap:3px 14px}
 .mspd{flex:1 1 150px;min-width:140px}
@@ -155,7 +155,7 @@ button{font:inherit;color:inherit}
 .fb[data-f="x"].on,.fb[data-f="k"].on{background:var(--claret-hi);border-color:var(--claret-hi);box-shadow:0 0 5px rgba(194,58,106,.5)}
 .mn{font-family:var(--font-mono);font-size:8px;color:var(--dim);text-align:center;opacity:.6}
 .mn.on{color:var(--amber);opacity:1}
-.mx{display:grid;grid-template-columns:62px repeat(11,minmax(0,1fr));gap:3px 3px;align-items:center}
+.mx{display:grid;grid-template-columns:62px repeat(13,minmax(0,1fr));gap:3px 3px;align-items:center}
 .mh{font-family:var(--font-mono);font-size:7.5px;letter-spacing:.02em;text-transform:uppercase;color:var(--dim);text-align:center;white-space:nowrap;overflow:hidden;padding-bottom:2px}
 .mr{font-family:var(--font-mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);white-space:nowrap;display:flex;flex-direction:column;gap:3px}
 .sbar{display:block;height:2px;width:46px;background:var(--navy);position:relative;overflow:hidden}
@@ -255,7 +255,7 @@ button{font:inherit;color:inherit}
   .cells{grid-template-columns:minmax(0,1fr)}
   .cells2{grid-template-columns:minmax(0,1fr);border-top:0}
   .cells2>.strip{border-right:0;border-bottom:1px solid var(--navy)}
-  .mx{grid-template-columns:52px repeat(11,minmax(0,1fr));gap:3px 2px}
+  .mx{grid-template-columns:52px repeat(13,minmax(0,1fr));gap:3px 2px}
   .mh{font-size:6.5px}
   .fb{width:14px;height:14px}
   .ft{height:26px}
@@ -422,7 +422,8 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
 .fb{width:8px;height:8px;border-radius:50%;border-color:var(--line2);box-shadow:none}
 .fb.on{box-shadow:0 0 6px rgba(229,149,0,.5)}
 .mn{font-size:10px}
-.mh{font-size:9.5px}
+.mh{font-size:8.5px;overflow:visible}
+.mx{grid-template-columns:50px repeat(13,minmax(0,1fr));gap:3px 2px}
 .mc{border:0;background:none;box-shadow:none;height:19px}
 .mc::before{left:calc(50% - 1px);top:calc(50% - 1px);bottom:auto;width:2px;height:2px;border-radius:50%;background:var(--line2)}
 .mc i{top:calc(50% - 1.5px);bottom:auto;height:3px;border-radius:2px;box-shadow:none}
@@ -496,7 +497,7 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
   .strip{border-bottom:0;padding:10px 0}
   .cells2>.strip{border-bottom:0}
   .mh{font-size:8px}
-  .mx{grid-template-columns:44px repeat(11,minmax(0,1fr))}
+  .mx{grid-template-columns:44px repeat(13,minmax(0,1fr))}
   .kbd{padding:10px 0}
   .keys{background:var(--bg);border-top:1px solid var(--line)}
   .chip{font-size:12px}
@@ -602,14 +603,14 @@ constructor(sr){
   dMix:0,dTime:0.4,dFb:0.4,vMix:0,vSize:0.5,vDamp:0.4,master:0.7,touch:0,arpOn:0,arpMode:0,arpOct:1,arpDiv:1,g0:1,g1:1,g2:1,g3:1,g4:1,
   fOn:1,fClk:0,fTime:1,fKeys:0,a:Engine.vdef(),b:Engine.vdef()};
  for(let k=0;k<8;k++){p['f'+k+'a']=0;p['f'+k+'b']=0;p['f'+k+'t']=0.4;p['f'+k+'r']=0;p['f'+k+'p']=1;p['f'+k+'h']=0;p['f'+k+'x']=0;p['f'+k+'k']=0;}
- for(let r=0;r<7;r++)for(let c=0;c<11;c++)p['m'+r+'_'+c]=0;
+ for(let r=0;r<7;r++)for(let c=0;c<13;c++)p['m'+r+'_'+c]=0;
  this.p=p;
  this.va=Engine.mkv();this.vb=Engine.mkv();
  this.pulPh=0;this.burst=0;this.step=0;this.sh=Math.random();this.rS=this.sh;this.dw=0.5;this.dwT=0.5;
  this.scale=[0,3,5,7,10];this.root=0;this.held=[];this.arpI=-1;this.arpC=0;this.pkL=0;this.pkR=0;this.modPh=0;this.keyNote=48;this.lastB=0;this.mc=0;this.post=null;
  this.fk=0;this.fEl=0;this.fTk=0;this.fHalt=false;this.fA=0;this.fB=0;this.fPA=0;this.fPB=0;this.gate=false;
- this.links=[];this.D=new Float64Array(11);this.S=new Float64Array(6);this.pitA=false;this.pitB=false;this.decA=false;this.decB=false;
- this.attC=1-Math.exp(-1/(0.0025*sr));
+ this.links=[];this.D=new Float64Array(13);this.S=new Float64Array(6);this.pitA=false;this.pitB=false;this.decA=false;this.decB=false;
+ this.attC=1-Math.exp(-1/(0.0025*sr));this.dcC=1-Math.exp(-6.2831853*8/sr);
  this.driftC=1-Math.exp(-1/(0.9*sr));this.driftP=1.4/sr;this.slewC=1;
  this.M=16383;this.rv=[0,1,2,3].map(function(){return new Float32Array(16384);});this.rvW=0;
  this.l0=0;this.l1=0;this.l2=0;this.l3=0;this.rvPh=0;
@@ -618,7 +619,7 @@ constructor(sr){
  this.dcxL=0;this.dcyL=0;this.dcxR=0;this.dcyR=0;
  this.derive();
 }
-static vdef(){return {pitch:0,fine:0,shape:0.3,fold:0.5,decay:0.4,peak:0.3,mode:0,trig:0,keys:1,glide:0.02,level:0.8,pan:0,decC:0.999,glideC:1,gl:0.7,gr:0.7};}
+static vdef(){return {pitch:0,fine:0,shape:0.3,fold:0.5,bias:0,decay:0.4,peak:0.3,mode:0,trig:0,keys:1,glide:0.02,level:0.8,pan:0,decC:0.999,glideC:1,gl:0.7,gr:0.7};}
 static mkv(){return {ph:0,env:0,att:false,tv:1,ic1:0,ic2:0,semi:48};}
 derive(){
  const sr=this.sr,p=this.p;
@@ -631,7 +632,7 @@ derive(){
  if(this.step>=p.sLen)this.step=0;
  // patch matrix: rows 0-5 are control sources, row 6 is the other voice at audio rate
  const L=[];
- for(let r=0;r<6;r++)for(let c=0;c<11;c++){const a=p['m'+r+'_'+c];if(a)L.push(r,c,a);}
+ for(let r=0;r<6;r++)for(let c=0;c<13;c++){const a=p['m'+r+'_'+c];if(a)L.push(r,c,a);}
  this.links=L;
  const has=function(c){for(let i=1;i<L.length;i+=3)if(L[i]===c)return true;return false;};
  this.pitA=has(2)||has(1);this.pitB=has(5)||has(1);this.decA=has(4);this.decB=has(7);
@@ -711,7 +712,7 @@ static osc(t,dt,sh){
  const sq=(t<0.5?1:-1)+Engine.blep(t,dt)-Engine.blep(t2,dt);
  return saw+(sq-saw)*Math.min(1,x-2);
 }
-voice(v,P,pit,fold,dec,usePit,useDec,xPit,xFold,fm,other){
+voice(v,P,pit,fold,dec,usePit,useDec,xPit,xFold,fm,other,bias){
  const sr=this.sr;
  const target=(P.keys?this.keyNote:48)+P.pitch+P.fine;
  v.semi+=(target-v.semi)*P.glideC;
@@ -721,8 +722,10 @@ voice(v,P,pit,fold,dec,usePit,useDec,xPit,xFold,fm,other){
  let f=440*Math.pow(2,(v.semi+pm-69)/12);if(f<0.5)f=0.5;else if(f>sr*0.22)f=sr*0.22;
  const g=(1+Math.max(0,P.fold+fold*4+other*xFold*4)*1.7)*1.5707963;
  const dt=f/(2*sr);let y=0;
- for(let k=0;k<2;k++){v.ph+=dt;if(v.ph>=1)v.ph-=1;y+=Math.sin(g*Engine.osc(v.ph,dt,P.shape));}
+ const bs=Math.max(-1.2,Math.min(1.2,(P.bias||0)+bias))*0.8;
+ for(let k=0;k<2;k++){v.ph+=dt;if(v.ph>=1)v.ph-=1;y+=Math.sin(g*(Engine.osc(v.ph,dt,P.shape)+bs));}
  y*=0.5;
+ if(bs!==0||v.dcOn){v.dcOn=true;v.dc=(v.dc||0)+(y-(v.dc||0))*this.dcC;y-=v.dc;}
  const dc=useDec?Math.exp(-1/(Math.max(0.005,P.decay*Math.pow(2,dec*3))*sr)):P.decC;
  if(v.att){v.env+=(v.tv-v.env)*this.attC;if(v.env>=v.tv*0.97)v.att=false;}else v.env*=dc;
  const e=P.mode===1?0.92:v.env;
@@ -747,15 +750,15 @@ process(L,R,n){
   this.modPh+=p.mRate/sr;if(this.modPh>=1)this.modPh-=1;
   mod=Engine.osc(this.modPh,p.mRate/sr,p.mShape);
   S[0]=this.fA;S[1]=this.fB;S[2]=sv[this.step];S[3]=mod;S[4]=rnd*2-1;S[5]=p.touch;
-  for(let c=0;c<11;c++)D[c]=0;
+  for(let c=0;c<13;c++)D[c]=0;
   for(let j=0;j<links.length;j+=3)D[links[j+1]]+=S[links[j]]*links[j+2];
   if(p.pRun&&(p.pMode===0||this.burst>0)){
    const r=p.pRate*Math.pow(2,(this.rS-0.5)*4*p.pRnd+D[0]*3);this.pulPh+=r/sr;
    if(this.pulPh>=1){this.pulPh-=1;if(p.pMode===2){this.burst--;if(this.burst>0)this.tick(0,1);}else this.tick(0,1);}
   }
   const tr=D[1]*12;
-  const a=this.voice(this.va,p.a,tr+D[2]*24,D[3],D[4],this.pitA,this.decA,this.xA,this.xFA,D[8],this.lastB);
-  const b=this.voice(this.vb,p.b,tr+D[5]*24,D[6],D[7],this.pitB,this.decB,this.xB,this.xFB,D[8],a);
+  const a=this.voice(this.va,p.a,tr+D[2]*24,D[3],D[4],this.pitA,this.decA,this.xA,this.xFA,D[8],this.lastB,D[11]);
+  const b=this.voice(this.vb,p.b,tr+D[5]*24,D[6],D[7],this.pitB,this.decB,this.xB,this.xFB,D[8],a,D[12]);
   this.lastB=b;
   const al=a*p.a.level,bl=b*p.b.level;
   const dl=al*p.a.gl+bl*p.b.gl,dr=al*p.a.gr+bl*p.b.gr;
@@ -858,6 +861,7 @@ for (const [v, other] of [['a', 'B'], ['b', 'A']]) {
   knob(v + '.fine', 'Fine', -1, 1, d.fine, { fmt: fmt.cents });
   knob(v + '.shape', 'Shape', 0, 1, d.shape, { fmt: fmt.shape });
   knob(v + '.fold', 'Folds', 0, 3, d.fold, { fmt: fmt.num });
+  knob(v + '.bias', 'Bias', -1, 1, 0, { fmt: x => Math.abs(x) < 0.005 ? '0' : (x > 0 ? '+' : '−') + Math.round(Math.abs(x) * 100) });
   knob(v + '.decay', 'Decay', 0.03, 4, d.decay, { curve: 'exp', fmt: fmt.sec });
   knob(v + '.peak', 'Peak', 0, 1, d.peak, { fmt: fmt.pct });
   knob(v + '.glide', 'Glide', 0, 1, d.glide, { fmt: fmt.sec });
@@ -888,10 +892,10 @@ for (let k = 0; k < 8; k++) {
 }
 /* patch matrix: sources × destinations */
 const MROWS = ['MARF A', 'MARF B', 'Seq', 'Mod', 'Rnd', 'Touch', 'Cross'];
-const MCOLS = ['Rate', 'Trsp', 'Pit A', 'Fld A', 'Dec A', 'Pit B', 'Fld B', 'Dec B', 'FM', 'Tape', 'Verb'];
-const MCOLS_LONG = ['Pulser rate', 'Transpose (in scale)', 'Pitch A', 'Folds A', 'Decay A', 'Pitch B', 'Folds B', 'Decay B', 'Cross FM', 'Tape time', 'Cistern send'];
+const MCOLS = ['Rate', 'Trsp', 'Pit A', 'Fld A', 'Dec A', 'Pit B', 'Fld B', 'Dec B', 'FM', 'Tape', 'Verb', 'Bia A', 'Bia B'];
+const MCOLS_LONG = ['Pulser rate', 'Transpose (in scale)', 'Pitch A', 'Folds A', 'Decay A', 'Pitch B', 'Folds B', 'Decay B', 'Cross FM', 'Tape time', 'Cistern send', 'Bias A', 'Bias B'];
 const mOK = (r, c) => r < 6 ? true : [2, 3, 5, 6].includes(c);
-for (let r = 0; r < 7; r++) for (let c = 0; c < 11; c++) if (mOK(r, c)) dat('m' + r + '_' + c, 0);
+for (let r = 0; r < 7; r++) for (let c = 0; c < 13; c++) if (mOK(r, c)) dat('m' + r + '_' + c, 0);
 sw('arpOn', ['Arpeggio'], 0);
 sw('latch', ['Hold'], 0);
 sw('arpMode', ['Up', 'Down', 'Up-down', 'Random', 'Played'], 0);
@@ -932,7 +936,7 @@ function stripHTML(m) {
   if (m.id === 'a' || m.id === 'b') {
     const v = m.id;
     return open.replace('class="strip"', 'class="strip v"') + head(m, `<span class="led2" id="env-${v}"></span>`) +
-      `<div class="vc">` + SUB('Oscillator') + ['pitch', 'fine', 'shape', 'fold', 'glide'].map(p => K(v + '.' + p)).join('') + `</div><div class="vc">` +
+      `<div class="vc">` + SUB('Oscillator') + ['pitch', 'fine', 'shape', 'fold', 'bias', 'glide'].map(p => K(v + '.' + p)).join('') + `</div><div class="vc">` +
       SUB('Gate') + K(v + '.decay') + K(v + '.peak') + RL('Mode', SEG(v + '.mode')) +
       SUB('Out') + K(v + '.level') + K(v + '.pan') + RL('Keys', SEG(v + '.keys')) + RL('Hit by', SEG(v + '.trig')) + `</div></section>`;
   }
@@ -957,7 +961,7 @@ function modsHTML() {
   let mx = `<span></span>` + MCOLS.map((c, j) => `<span class="mh" title="${MCOLS_LONG[j]}">${c}</span>`).join('');
   for (let r = 0; r < 7; r++) {
     mx += `<span class="mr">${MROWS[r]}${r < 6 ? `<i class="sbar"><b id="sb${r}"></b></i>` : ''}</span>`;
-    for (let c = 0; c < 11; c++) mx += mOK(r, c) ? `<button class="mc" data-r="${r}" data-c="${c}" aria-label="${MROWS[r]} to ${MCOLS_LONG[c]}"><i></i></button>` : `<span class="mc off"></span>`;
+    for (let c = 0; c < 13; c++) mx += mOK(r, c) ? `<button class="mc" data-r="${r}" data-c="${c}" aria-label="${MROWS[r]} to ${MCOLS_LONG[c]}"><i></i></button>` : `<span class="mc off"></span>`;
   }
   const patch = `<section class="strip mtx" style="--c:var(--a)"><div class="sh"><h2>Patch</h2><span class="tag" style="font-size:8px;opacity:.7;margin-left:auto;text-transform:none;letter-spacing:.04em">drag up or down · double-click clears</span></div><div class="mx">${mx}</div></section>`;
   return rm + marf + patch;
@@ -1656,7 +1660,7 @@ function trBuild() {
 function trChips() {
   trLanes.forEach(L => {
     const r = L.r; L.dst.innerHTML = '';
-    for (let c = 0; c < 11; c++) {
+    for (let c = 0; c < 13; c++) {
       if (!mOK(r, c)) continue; const v = state[wid(r, c)] || 0; if (!v) continue;
       const b = document.createElement('button'); b.className = 'tch' + (v < 0 ? ' neg' : '');
       b.innerHTML = `<i style="width:${Math.abs(v) * 100}%"></i><span>${MCOLS[c]}</span><em>${sgn(v).replace('%', '')}</em>`;
@@ -1685,7 +1689,7 @@ function trAdd(anchor, r) {
   trPopClose();
   const p = document.createElement('div'); p.className = 'tpop'; p.id = 'tpop';
   let h = `<div class="ttl">${MROWS[r]} → </div>`;
-  for (let c = 0; c < 11; c++) if (mOK(r, c) && !state[wid(r, c)]) h += `<button data-c="${c}" title="${MCOLS_LONG[c]}">${MCOLS[c]}</button>`;
+  for (let c = 0; c < 13; c++) if (mOK(r, c) && !state[wid(r, c)]) h += `<button data-c="${c}" title="${MCOLS_LONG[c]}">${MCOLS[c]}</button>`;
   p.innerHTML = h; document.body.appendChild(p);
   const a = anchor.getBoundingClientRect(); p.style.left = Math.max(8, Math.min(innerWidth - 258, a.left - 100)) + 'px'; p.style.top = Math.min(innerHeight - p.offsetHeight - 8, a.bottom + 6) + 'px';
   p.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const c = +b.dataset.c; setParam(wid(r, c), 0.5); toast(MROWS[r] + ' → ' + MCOLS_LONG[c] + '  +50%  · drag the tag to change it'); trPopClose(); trChips(); });

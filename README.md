@@ -28,11 +28,11 @@ Pick a scene from the list at the top, or press **dice** for a random one (rhyth
 
 ## The parts
 
-- **Synth A and B**: an oscillator that morphs between shapes, a wavefolder and a low pass gate. Each can ring as a drone or be struck by the pulser, the keys or both.
+- **Synth A and B**: an oscillator that morphs between shapes, a wavefolder and a low pass gate. **bias** pushes the wave off centre before it folds, so the two halves fold differently and the tone fills out. Each can ring as a drone or be struck by the pulser, the keys or both.
 - **Pulser**: free running, clocked by the MARF, or in bursts.
 - **Sequencer**: five steps that can be switched off one by one, stepped by the pulser, the keys or the MARF, optionally quantised to the scale.
 - **MARF**: eight stages with two levels each (A and B), a time, and flags for ramp, pulse, hold, stop and skip. It runs on its own time or on the pulser, and the keys can restart it or address its stages.
-- **Patch**: seven sources (MARF A, MARF B, seq, mod, rnd, touch, cross) to eleven destinations (pulser rate, transpose, pitch, folds and decay of each voice, FM, tape, reverb). Cross is one voice modulating the other at audio rate.
+- **Patch**: seven sources (MARF A, MARF B, seq, mod, rnd, touch, cross) to thirteen destinations (pulser rate, transpose, pitch, folds, bias and decay of each voice, FM, tape, reverb). Cross is one voice modulating the other at audio rate.
 - **Keyboard**: root, scale, octave, an arpeggiator with hold, and the option to show only the notes of the scale.
 
 ## MIDI
