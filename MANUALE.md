@@ -111,7 +111,6 @@ Le due voci sono identiche. A è ambra, B è rosa.
 - **fine**: più o meno un semitono, in centesimi. Pochi centesimi di differenza tra A e B le fanno battere.
 - **shape**: l'onda prima della piegatura. Va da sinusoide a triangolare, a dente di sega, a quadra.
 - **folds**: il wavefolder. A zero l'onda passa intatta. Alzandolo, l'onda viene spinta oltre il suo limite e si ripiega su se stessa, più e più volte, e il suono diventa più brillante e più nasale.
-- **bias**: sposta l'onda in su o in giù prima che si pieghi. A zero le due metà dell'onda si piegano allo stesso modo e il suono è cavo. Lontano da zero le due metà si piegano in modo diverso e il timbro si riempie. Fa qualcosa solo quando folds è sopra lo zero.
 - **glide**: quanto lentamente l'intonazione scivola verso una nota nuova.
 
 **gate**
@@ -208,7 +207,6 @@ La matrice collega tra loro le parti dello strumento. Le righe sono le sorgenti,
 | fm | quanto ogni voce modula in frequenza l'altra | |
 | tape | il tempo dell'eco | circa tre volte più lungo o più corto |
 | verb | la mandata al riverbero | tutta l'escursione |
-| bia a, bia b | bias | tutta l'escursione |
 
 La riga **cross** arriva solo a intonazione e folds: con lei B modula l'intonazione o le pieghe di A a frequenza audio, e viceversa. Quantità piccole danno un bordo ruvido, quantità grandi danno rumore e campane.
 
@@ -326,7 +324,7 @@ Una tastiera MIDI suona lo strumento dove il browser ha Web MIDI: Chrome, Edge o
 
 **Una linea di basso che cambia da sola.** Carica Init. Accendi *run* del pulser. Metti *hit by* di Synth A su pulser e il suo pitch a −12. Nella patch, trascina *seq → pit a* fino a circa +40. Muovi i cinque slider del sequencer. Poi alza un poco *rnd → fld a*: ogni nota avrà una brillantezza diversa.
 
-**Un drone che respira.** Carica Init. Metti tutte e due le voci su *drone*, alza il level di B, scorda il *fine* di B di qualche centesimo. Alza *folds* su entrambe. Rallenta al minimo il rate di *mod* e collega *mod → fld a* e *mod → bia b*. Aggiungi mandata al cistern.
+**Un drone che respira.** Carica Init. Metti tutte e due le voci su *drone*, alza il level di B, scorda il *fine* di B di qualche centesimo. Alza *folds* su entrambe. Rallenta al minimo il rate di *mod* e collega *mod → fld a* e *mod → fld b*. Aggiungi mandata al cistern.
 
 **Il MARF come ritmo.** Metti il modo del pulser su *marf*. Dai agli otto stadi tempi diversi trascinando i loro numeri. Ora il pulser batte all'inizio di ogni stadio, quindi il disegno di stadi lunghi e corti è il ritmo. Spegni *pulse* su uno stadio per lasciare un vuoto.
 
