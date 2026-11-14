@@ -12,6 +12,8 @@ A two-voice touch synth that runs in your browser, in the spirit of the Buchla M
 
 Tap **start**, then touch the keyboard. The vertical position of your finger on a key is **Touch**: lower is stronger, and Touch is also a modulation source.
 
+**rec** records exactly what comes out, as a 24-bit WAV. Press it again to stop (it shows the time while it runs), then download the file, share it or throw it away. A recording stops by itself at 20 minutes.
+
 Pick a scene from the list at the top, or press **dice** for a random one (rhythm, drone, cross or rain). Save your own scenes with the icons next to the list; a name is suggested for you.
 
 ## Three views

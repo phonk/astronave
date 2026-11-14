@@ -5,7 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="astronave: a two-voice touch synth in the browser. Two wavefolding voices that bend each other, a pulser, a sequencer, an eight-stage function generator and a patch matrix.">
 <meta name="theme-color" content="#02040F">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* recording */
+.recb i{background:none!important;border:1px solid var(--wine);width:9px;height:9px;box-sizing:border-box}
+.recb.on{color:var(--wine)}
+.recb.on i{background:var(--wine)!important;box-shadow:0 0 8px var(--wine);animation:recp 1.2s ease-in-out infinite}
+@keyframes recp{50%{opacity:.35}}
+.recp{display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px;padding:8px 14px;border-top:1px solid var(--line);font-size:12.5px}
+.recp .reci{color:var(--ink);font-variant-numeric:tabular-nums;text-transform:none!important}
+.recp a.rb{text-decoration:none}
+.recp .rb{color:var(--amber)}
+</style>
 <title>astronave</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap">
@@ -511,6 +521,7 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
   <header class="top">
     <div class="brand"><h1>astronave</h1><div class="subl"><span class="toast" id="toast" role="status"></span><span class="tag subt">two voices, eight stages, no map</span></div></div>
     <button class="rb pwr" id="power" aria-pressed="false" aria-label="Start the sound"><i></i><b id="powerTxt" style="font-weight:400">Start</b></button>
+    <button class="rb recb" id="recBtn" aria-pressed="false" aria-label="Record what you play"><i></i><b id="recTxt" style="font-weight:400">Rec</b></button>
     <div class="scenebar">
       <div class="spick" id="spick">
         <button class="ib" id="scPrev" aria-label="Previous scene" title="Previous scene"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
@@ -544,6 +555,13 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
   </header>
 
   <nav class="tabs" id="tabs" aria-label="Modules"></nav>
+  <div class="recp" id="recPanel" hidden>
+    <span class="reci" id="recInfo"></span>
+    <button class="rb" id="recSave">Save</button>
+    <a class="rb" id="recDl" hidden>Download</a>
+    <button class="rb" id="recShare" hidden>Share…</button>
+    <button class="ib" id="recDrop" aria-label="Discard the recording" title="Discard the recording"><svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+  </div>
   <main class="cells" id="strips"></main>
   <section class="cells2" id="mods"></section>
   <section class="dgm" id="dgm"><div class="trk" id="trk" role="group" aria-label="Modulation sources, live, with where each one goes"></div><div class="dgt"><svg id="dgt" viewBox="0 0 1000 100" aria-label="MARF stages as a timeline: width is time, draw to set levels"></svg></div></section>
@@ -805,8 +823,12 @@ process(L,R,n){
 `;
 const WORKLET = `
 class EaselProc extends AudioWorkletProcessor{
- constructor(){super();this.e=new Engine(sampleRate);this.e.post=(m)=>this.port.postMessage(m);this.port.onmessage=(ev)=>this.e.msg(ev.data);}
- process(i,o){const out=o[0];this.e.process(out[0],out[1]||out[0],out[0].length);return true;}
+ constructor(){super();this.e=new Engine(sampleRate);this.e.post=(m)=>this.port.postMessage(m);this.rec=false;this.rb=new Float32Array(16384);this.rn=0;
+  this.port.onmessage=(ev)=>{const d=ev.data;if(d&&d.t==='rec'){if(!d.on&&this.rec)this.flush(true);this.rec=!!d.on;this.rn=0;}else this.e.msg(d);};}
+ flush(last){const d=this.rb.slice(0,this.rn);this.rn=0;this.port.postMessage({t:'pcm',d:d,last:!!last},[d.buffer]);}
+ process(i,o){const out=o[0],L=out[0],R=out[1]||out[0],n=L.length;this.e.process(L,R,n);
+  if(this.rec){const b=this.rb;let k=this.rn;for(let j=0;j<n;j++){b[k++]=L[j];b[k++]=R[j];}this.rn=k;if(k>=b.length-512)this.flush(false);}
+  return true;}
 }
 registerProcessor('phonkless-easel',EaselProc);
 `;
@@ -1133,12 +1155,12 @@ async function buildAudio() {
     const url = URL.createObjectURL(new Blob([ENGINE + WORKLET], { type: 'text/javascript' }));
     await c.audioWorklet.addModule(url);
     node = new AudioWorkletNode(c, 'phonkless-easel', { numberOfInputs: 0, outputChannelCount: [2] });
-    node.port.onmessage = e => Object.assign(meter, e.data);
+    node.port.onmessage = e => { if (e.data && e.data.t === 'pcm') onPcm(e.data); else Object.assign(meter, e.data); };
   } catch (err) {
     const E = new Function(ENGINE + ';return Engine;')();
     eng = new E(c.sampleRate); eng.post = m => Object.assign(meter, m);
     node = c.createScriptProcessor(1024, 0, 2);
-    node.onaudioprocess = e => eng.process(e.outputBuffer.getChannelData(0), e.outputBuffer.getChannelData(1), e.outputBuffer.length);
+    node.onaudioprocess = e => { const L = e.outputBuffer.getChannelData(0), R = e.outputBuffer.getChannelData(1), n = e.outputBuffer.length; eng.process(L, R, n); if (recState) { const d = new Float32Array(n * 2); for (let j = 0; j < n; j++) { d[2 * j] = L[j]; d[2 * j + 1] = R[j]; } onPcm({ d }); } };
   }
   node.connect(analyser);
   ctx = c; c.onstatechange = () => updPower();
@@ -1642,6 +1664,71 @@ const BOOT = migrate(FACTORY["slow comet"]);
 for (const id in P) state[id] = id in BOOT ? BOOT[id] : P[id].def;
 lastSnap = JSON.stringify(state);
 
+
+/* ---------------- recording: 24-bit WAV of exactly what comes out, kept until you save or discard it ---------------- */
+let recState = null, lastRec = null, recUrl = null, wakeLock = null;
+const recBtn = document.getElementById('recBtn'), recTxt = document.getElementById('recTxt'), recPanel = document.getElementById('recPanel');
+const REC_MAX = 20 * 60;
+function to24(f) { const b = new Uint8Array(f.length * 3); for (let i = 0, o = 0; i < f.length; i++, o += 3) { let v = f[i]; v = v > 1 ? 1 : v < -1 ? -1 : v; const n = Math.round(v * 8388607); b[o] = n & 255; b[o + 1] = (n >> 8) & 255; b[o + 2] = (n >> 16) & 255; } return b; }
+function wavHeader(frames, sr) { const b = new ArrayBuffer(44), v = new DataView(b), w = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); }, n = frames * 6; w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 2, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 6, true); v.setUint16(32, 6, true); v.setUint16(34, 24, true); w(36, 'data'); v.setUint32(40, n, true); return new Uint8Array(b); }
+const CRCT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+/* a zip with one stored (uncompressed) file: the save prompt inside Claude takes zip, not wav */
+function zipStore(name, parts) {
+  let crc = 0xFFFFFFFF, size = 0; for (const p of parts) { size += p.length; for (let i = 0; i < p.length; i++) crc = CRCT[(crc ^ p[i]) & 255] ^ (crc >>> 8); } crc = (crc ^ 0xFFFFFFFF) >>> 0;
+  const nm = new TextEncoder().encode(name), lh = new DataView(new ArrayBuffer(30)), cd = new DataView(new ArrayBuffer(46)), end = new DataView(new ArrayBuffer(22));
+  lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint32(14, crc, true); lh.setUint32(18, size, true); lh.setUint32(22, size, true); lh.setUint16(26, nm.length, true);
+  cd.setUint32(0, 0x02014b50, true); cd.setUint16(4, 20, true); cd.setUint16(6, 20, true); cd.setUint32(16, crc, true); cd.setUint32(20, size, true); cd.setUint32(24, size, true); cd.setUint16(28, nm.length, true);
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, 1, true); end.setUint16(10, 1, true); end.setUint32(12, 46 + nm.length, true); end.setUint32(16, 30 + nm.length + size, true);
+  return new Blob([lh.buffer, nm, ...parts, cd.buffer, nm, end.buffer], { type: 'application/zip' });
+}
+function recName() { const d = new Date(), z = n => String(n).padStart(2, '0'); return 'astronave-' + curName().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + '-' + z(d.getHours()) + z(d.getMinutes()) + '.wav'; }
+const mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+function onPcm(m) {
+  const r = recState; if (!r) return;
+  if (m.d && m.d.length) { r.parts.push(to24(m.d)); r.frames += m.d.length / 2; }
+  if (m.last && r.done) r.done();
+  if (r.frames / r.sr >= REC_MAX && !r.stopping) { toast('Recording stopped at ' + REC_MAX / 60 + ' minutes'); stopRec(); }
+}
+async function startRec() {
+  await ensureAudio();
+  if (!ctx || !node) { toast('Start the sound first'); return; }
+  const t0 = Date.now();
+  recState = { parts: [], frames: 0, sr: ctx.sampleRate, t0, timer: setInterval(() => { recTxt.textContent = mmss((Date.now() - t0) / 1000); }, 500) };
+  if (!eng) node.port.postMessage({ t: 'rec', on: true });
+  recBtn.classList.add('on'); recBtn.setAttribute('aria-pressed', 'true'); recBtn.setAttribute('aria-label', 'Stop recording'); recTxt.textContent = '0:00';
+  try { if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+}
+async function stopRec() {
+  const r = recState; if (!r || r.stopping) return; r.stopping = true; clearInterval(r.timer);
+  recBtn.classList.remove('on'); recBtn.setAttribute('aria-pressed', 'false'); recBtn.setAttribute('aria-label', 'Record what you play'); recTxt.textContent = 'Rec';
+  if (!eng && node) await new Promise(res => { r.done = res; node.port.postMessage({ t: 'rec', on: false }); setTimeout(res, 1500); });
+  recState = null;
+  try { if (wakeLock) { await wakeLock.release(); wakeLock = null; } } catch (e) {}
+  if (!r.frames) { toast('Empty recording'); return; }
+  const name = recName(), parts = [wavHeader(r.frames, r.sr), ...r.parts];
+  lastRec = { name, parts, wav: new Blob(parts, { type: 'audio/wav' }), secs: r.frames / r.sr };
+  showRec(); if (window.claude) saveRec();
+}
+function showRec() {
+  if (!lastRec) { recPanel.hidden = true; fitScreen(); return; }
+  document.getElementById('recInfo').textContent = lastRec.name + ' · ' + mmss(lastRec.secs) + ' · ' + (lastRec.wav.size / 1048576).toFixed(1) + ' MB';
+  if (recUrl) URL.revokeObjectURL(recUrl); recUrl = URL.createObjectURL(lastRec.wav);
+  const a = document.getElementById('recDl'); a.href = recUrl; a.download = lastRec.name; a.hidden = !!window.claude;
+  document.getElementById('recSave').hidden = !window.claude;
+  let can = false; try { lastRec.file = new File([lastRec.wav], lastRec.name, { type: 'audio/wav' }); can = !!(navigator.canShare && navigator.canShare({ files: [lastRec.file] })); } catch (e) {}
+  document.getElementById('recShare').hidden = !can;
+  recPanel.hidden = false; fitScreen();
+}
+async function saveRec() {
+  if (!lastRec) return;
+  if (!downloads) { toast('No save prompt in this view: use share'); return; }
+  try { toast('Preparing the file…'); await downloads.save({ filename: lastRec.name.replace(/\.wav$/, '.zip'), data: zipStore(lastRec.name, lastRec.parts) }); toast('Recording saved'); }
+  catch (e) { if (e && e.code === 'declined') { toast(''); return; } toast('Saving failed' + (e && e.code ? ' (' + e.code + ')' : '') + ': try share'); }
+}
+recBtn.addEventListener('click', () => { if (recState) stopRec(); else startRec(); });
+document.getElementById('recSave').addEventListener('click', saveRec);
+document.getElementById('recShare').addEventListener('click', async () => { if (!lastRec) return; try { await navigator.share({ files: [lastRec.file], title: lastRec.name }); } catch (e) { if (e && e.name !== 'AbortError') toast('Sharing failed'); } });
+document.getElementById('recDrop').addEventListener('click', () => { lastRec = null; if (recUrl) { URL.revokeObjectURL(recUrl); recUrl = null; } showRec(); });
 
 /* ---------------- traces view: one lane per source, live, with its destinations ---------------- */
 const NS = 'http://www.w3.org/2000/svg';
