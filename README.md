@@ -37,7 +37,7 @@ Pick a scene from the list at the top, or press **dice** for a random one (rhyth
 - **Sequencer**: five steps that can be switched off one by one, stepped by the pulser, the keys or the MARF, optionally quantised to the scale.
 - **MARF**: eight stages with two levels each (A and B), a time, and flags for ramp, pulse, hold, stop and skip. It runs on its own time or on the pulser, and the keys can restart it or address its stages.
 - **Patch**: seven sources (MARF A, MARF B, seq, mod, rnd, touch, cross) to thirteen destinations (pulser rate, transpose, pitch, folds, bias and decay of each voice, FM, tape, reverb). Cross is one voice modulating the other at audio rate.
-- **Keyboard**: root, scale, octave, an arpeggiator with hold, and the option to show only the notes of the scale.
+- **Keyboard**: root, scale, octave, an arpeggiator with hold, and the option to show only the notes of the scale. The scales include just intonation, maqam scales with quarter tones, slendro and pelog.
 
 ## MIDI
 

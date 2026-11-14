@@ -220,6 +220,17 @@ La tastiera è una fila di piastre, due ottave a partire dall'ottava che scegli.
 - **scale only**: mostra solo le note della scala, così nessuna piastra è fuori tonalità.
 - **− e +** spostano l'ottava.
 
+**Altre accordature**
+
+L'ultimo gruppo del menu delle scale, *other tunings*, contiene scale le cui note cadono tra i tasti del pianoforte:
+
+- **just major**, **just minor**, **pythagorean**: costruite con rapporti semplici. Accordi e droni qui battono meno che nell'accordatura normale.
+- **harmonics 8-16**: otto note prese dalla serie degli armonici della tonica.
+- **rast**, **bayati**, **saba**, **sikah**: scale di maqam con i quarti di tono.
+- **slendro** e **pelog (gamelan)**: approssimazioni, perché ogni gamelan è accordato a modo suo.
+
+Con una di queste selezionata, la tastiera mostra sempre solo le note della scala, e ogni tasto porta il nome della nota più vicina e di quanti centesimi se ne scosta, per esempio *e−14*. Su una tastiera MIDI i tasti diventano i gradi della scala in fila, a partire dalla tonica sul Do centrale. *In scale*, l'arpeggio e la vista surface seguono l'accordatura come qualsiasi altra scala.
+
 **arpeggio**
 
 - **arpeggio** acceso: le note che tieni vengono suonate una alla volta.

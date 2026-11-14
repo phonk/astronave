@@ -218,6 +218,17 @@ The keyboard is a row of plates, two octaves from the octave you choose.
 - **scale only**: shows only the notes of the scale, so no plate is out of key.
 - **− and +** move the octave.
 
+**Other tunings**
+
+The last group in the scale menu, *other tunings*, holds scales whose notes fall between the keys of a piano:
+
+- **just major**, **just minor**, **pythagorean**: built from simple ratios. Chords and drones in these beat less than in ordinary tuning.
+- **harmonics 8-16**: eight notes from the harmonic series of the root.
+- **rast**, **bayati**, **saba**, **sikah**: maqam scales with quarter tones.
+- **slendro** and **pelog (gamelan)**: approximations, since every gamelan is tuned its own way.
+
+With one of these selected, the keyboard always shows only the notes of the scale, and each key is labelled with the nearest note name and how many cents it is off, like *e−14*. On a MIDI keyboard the keys become the steps of the scale in a row, starting from the root at middle C. *In scale*, the arpeggio and the surface view follow the tuning as they do any other scale.
+
 **arpeggio**
 
 - **arpeggio** on: the notes you hold are played one at a time.

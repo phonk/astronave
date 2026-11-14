@@ -843,8 +843,28 @@ const SCALE_GROUPS = [
   ['Pentatonic and blues', [['Major pentatonic', [0, 2, 4, 7, 9]], ['Minor pentatonic', [0, 3, 5, 7, 10]], ['Blues', [0, 3, 5, 6, 7, 10]], ['Hirajoshi', [0, 2, 3, 7, 8]], ['In sen', [0, 1, 5, 7, 10]], ['Pelog', [0, 1, 3, 7, 8]]]],
   ['Other', [['Chromatic', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]], ['Whole tone', [0, 2, 4, 6, 8, 10]], ['Diminished', [0, 2, 3, 5, 6, 8, 9, 11]], ['Double harmonic', [0, 1, 4, 5, 7, 8, 11]], ['Hungarian minor', [0, 2, 3, 6, 7, 8, 11]], ['Phrygian dominant', [0, 1, 4, 5, 7, 8, 10]]]]
 ];
+/* tunings outside twelve equal steps: intervals in semitones with fractions, all repeating at the octave.
+   added at the end so the scale numbers saved in old scenes stay the same */
+const jr = (a, b) => Math.round(12 * Math.log2(a / b) * 10000) / 10000;
+SCALE_GROUPS.push(['Other tunings', [
+  ['Just major', [0, jr(9, 8), jr(5, 4), jr(4, 3), jr(3, 2), jr(5, 3), jr(15, 8)]],
+  ['Just minor', [0, jr(9, 8), jr(6, 5), jr(4, 3), jr(3, 2), jr(8, 5), jr(9, 5)]],
+  ['Harmonics 8-16', [0, jr(9, 8), jr(10, 8), jr(11, 8), jr(12, 8), jr(13, 8), jr(14, 8), jr(15, 8)]],
+  ['Pythagorean', [0, jr(9, 8), jr(81, 64), jr(4, 3), jr(3, 2), jr(27, 16), jr(243, 128)]],
+  ['Rast', [0, 2, 3.5, 5, 7, 9, 10.5]],
+  ['Bayati', [0, 1.5, 3, 5, 7, 8, 10]],
+  ['Saba', [0, 1.5, 3, 4, 7, 8, 10]],
+  ['Sikah', [0, 1.5, 3.5, 5.5, 7, 8.5, 10.5]],
+  ['Slendro', [0, 2.4, 4.8, 7.2, 9.6]],
+  ['Pelog (gamelan)', [0, 1.2, 2.7, 5.4, 6.7, 7.85, 9.5]]
+]]);
 const SCALES = [];
-SCALE_GROUPS.forEach(g => g[1].forEach(s => SCALES.push({ name: s[0], iv: s[1] })));
+SCALE_GROUPS.forEach(g => g[1].forEach(s => SCALES.push({ name: s[0], iv: s[1], micro: s[1].some(x => x !== Math.round(x)) })));
+const isMicro = () => !!SCALES[state.scale].micro;
+/* a note that may sit between the keys: nearest name, then how many cents off */
+function noteName(n, withOct) { const k = Math.round(n), c = Math.round((n - k) * 100); return NOTE[((k % 12) + 12) % 12] + (withOct ? Math.floor(k / 12) - 1 : '') + (c ? (c > 0 ? '+' : '−') + Math.abs(c) : ''); }
+/* a midi keyboard on such a tuning: the keys are the steps of the scale in a row, starting from the root at middle C */
+function midiNote(d) { if (!isMicro()) return d; const iv = SCALES[state.scale].iv, k = d - 60, o = Math.floor(k / iv.length); return 60 + state.root + 12 * o + iv[k - o * iv.length]; }
 const scaleIdx = name => SCALES.findIndex(s => s.name === name);
 const NOTE = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
 
@@ -1490,14 +1510,14 @@ document.getElementById('dice').addEventListener('click', () => { loadScene(gene
 const pop = document.getElementById('pop'), rootsEl = document.getElementById('roots'), sgroupsEl = document.getElementById('sgroups');
 rootsEl.innerHTML = NOTE.map((n, i) => `<button class="rbtn" data-r="${i}">${n}</button>`).join('');
 sgroupsEl.innerHTML = SCALE_GROUPS.map(g => `<div class="gname">${g[0]}</div><div class="sgrid">${g[1].map(s => `<button class="sbtn" data-s="${scaleIdx(s[0])}"><span>${s[0]}</span><small>${s[1].length}</small></button>`).join('')}</div>`).join('');
-let onlyScale = false, oct = 3;
-try { onlyScale = localStorage.getItem('easel-only') === '1'; } catch (e) {}
+let onlyPref = false, oct = 3;
+try { onlyPref = localStorage.getItem('easel-only') === '1'; } catch (e) {}
 function renderScale() {
   document.getElementById('rootLbl').textContent = NOTE[state.root];
   document.getElementById('scaleLbl').textContent = SCALES[state.scale].name;
   rootsEl.querySelectorAll('.rbtn').forEach(b => b.classList.toggle('on', +b.dataset.r === state.root));
   sgroupsEl.querySelectorAll('.sbtn').forEach(b => b.classList.toggle('on', +b.dataset.s === state.scale));
-  const ob = document.getElementById('onlyBtn'); ob.classList.toggle('on', onlyScale); ob.setAttribute('aria-pressed', onlyScale);
+  const ob = document.getElementById('onlyBtn'), on = onlyPref || isMicro(); ob.classList.toggle('on', on); ob.setAttribute('aria-pressed', on); ob.disabled = isMicro(); ob.title = isMicro() ? 'This tuning has its own notes, so the keys always show only those' : '';
 }
 function openPop(btn) {
   closeSpop();
@@ -1514,19 +1534,19 @@ document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) closePop(); });
 rootsEl.addEventListener('click', e => { const b = e.target.closest('.rbtn'); if (!b) return; setParam('root', +b.dataset.r); renderScale(); buildKeys(); });
 sgroupsEl.addEventListener('click', e => { const b = e.target.closest('.sbtn'); if (!b) return; setParam('scale', +b.dataset.s); renderScale(); buildKeys(); closePop(); });
-document.getElementById('onlyBtn').addEventListener('click', () => { onlyScale = !onlyScale; try { localStorage.setItem('easel-only', onlyScale ? '1' : '0'); } catch (e) {} renderScale(); buildKeys(); });
+document.getElementById('onlyBtn').addEventListener('click', () => { if (isMicro()) return; onlyPref = !onlyPref; try { localStorage.setItem('easel-only', onlyPref ? '1' : '0'); } catch (e) {} renderScale(); buildKeys(); });
 
 const keysEl = document.getElementById('keys');
 const narrowMQ = window.matchMedia('(max-width:640px) and (orientation:portrait)');
 let plates = [];
 function buildKeys() {
   const span = narrowMQ.matches ? 12 : 24, base = 12 * (oct + 1), iv = SCALES[state.scale].iv, root = state.root;
-  const notes = [];
-  if (onlyScale) { for (let i = 0; i <= span; i++) if (iv.includes(i % 12)) notes.push(base + root + i); }
+  const notes = [], onlyScale = onlyPref || isMicro();
+  if (onlyScale) { for (let o = 0; o < span / 12; o++) iv.forEach(x => notes.push(base + root + 12 * o + x)); notes.push(base + root + span); }
   else for (let i = 0; i <= span; i++) notes.push(base + i);
   keysEl.innerHTML = notes.map(n => {
     const pc = n % 12, isRoot = ((n - root) % 12 + 12) % 12 === 0, sharp = [1, 3, 6, 8, 10].includes(pc);
-    const lab = onlyScale ? NOTE[pc] + (isRoot ? (Math.floor(n / 12) - 1) : '') : (pc === 0 ? 'C' + (Math.floor(n / 12) - 1) : '');
+    const lab = onlyScale ? noteName(n, isRoot) : (pc === 0 ? 'C' + (Math.floor(n / 12) - 1) : '');
     return `<div class="plate ${!onlyScale && sharp ? 'sh2' : ''} ${isRoot ? 'root' : ''}" data-n="${n}">${isRoot ? '<i class="rt"></i>' : ''}<span>${lab}</span></div>`;
   }).join('');
   plates = [...keysEl.children];
@@ -1551,7 +1571,7 @@ function gateOff(k) { if (!gateKeys.delete(k)) return; if (!gateKeys.size) post(
 function noteDown(n, vel, plate, src) {
   gateOn(src + ':' + n);
   if (state.fKeys === 2) {
-    const idx = plate ? plates.indexOf(plate) % 8 : ((n % 8) + 8) % 8;
+    const idx = plate ? plates.indexOf(plate) % 8 : ((Math.round(n) % 8) + 8) % 8;
     ensureAudio().then(() => post({ t: 'addr', i: idx, v: Math.max(0.15, Math.min(1, vel)) }));
     if (plate) { plate.classList.add('on'); clearTimeout(plate._t); plate._t = setTimeout(() => plate.classList.remove('on'), 160); }
     return;
@@ -1590,13 +1610,14 @@ window.addEventListener('keydown', e => {
   if (k === 'z') { oct = Math.max(1, oct - 1); buildKeys(); return; }
   if (k === 'x') { oct = Math.min(6, oct + 1); buildKeys(); return; }
   let idx = -1;
-  if (onlyScale) idx = KSC.indexOf(k); else if (k in KCHR) idx = KCHR[k];
+  if (onlyPref || isMicro()) idx = KSC.indexOf(k); else if (k in KCHR) idx = KCHR[k];
   if (idx >= 0 && plates[idx]) { e.preventDefault(); kbDown[k] = +plates[idx].dataset.n; noteDown(kbDown[k], 0.85, plates[idx], 'k'); }
 });
 const kbDown = {};
 window.addEventListener('keyup', e => { const k = e.key.toLowerCase(); if (k in kbDown) { noteUp(kbDown[k], 'k'); delete kbDown[k]; } });
 const midiStatus = document.getElementById('midiStatus');
-function midiIn(s, d1, d2) { const c = s & 0xf0; if (c === 0xD0) { setTouch(d1 / 127); return; } if (c === 0xA0 || (c === 0xB0 && d1 === 1)) { setTouch(d2 / 127); return; } if (c === 0x90 && d2 > 0) { setTouch(d2 / 127); noteDown(d1, d2 / 127, null, 'm'); } else if (c === 0x80 || (c === 0x90 && d2 === 0)) noteUp(d1, 'm'); }
+function midiIn(s, d1, d2) { const c = s & 0xf0; if (c === 0xD0) { setTouch(d1 / 127); return; } if (c === 0xA0 || (c === 0xB0 && d1 === 1)) { setTouch(d2 / 127); return; } if (c === 0x90 && d2 > 0) { setTouch(d2 / 127); const n = midiNote(d1); midiMap[d1] = n; noteDown(n, d2 / 127, null, 'm'); } else if (c === 0x80 || (c === 0x90 && d2 === 0)) { noteUp(d1 in midiMap ? midiMap[d1] : d1, 'm'); delete midiMap[d1]; } }
+const midiMap = {};
 if (NATIVE) {
   window.__nativeMidi = midiIn;
   window.__nativeMidiSources = names => { midiStatus.textContent = names.length ? 'MIDI · ' + names[0] + (names.length > 1 ? ' +' + (names.length - 1) : '') : 'MIDI · none'; };
@@ -1930,7 +1951,7 @@ function sfSave() { try { localStorage.setItem('phonk-zones', JSON.stringify({ l
 const sfCfg = id => (sfMaps[sfLayout] && sfMaps[sfLayout][id]) || SF_LAYOUTS[sfLayout].def[id] || { role: 'off', v: 0 };
 function sfNote(deg) { const iv = SCALES[state.scale].iv, n = iv.length, o = Math.floor(deg / n), d = ((deg % n) + n) % n; return 12 * (oct + 1) + state.root + iv[d] + 12 * o; }
 function sfText(c) {
-  if (c.role === 'note') { const n = sfNote(c.v); return NOTE[n % 12] + (Math.floor(n / 12) - 1); }
+  if (c.role === 'note') return noteName(sfNote(c.v), true);
   if (c.role === 'stage') return 'st ' + (c.v + 1);
   if (c.role === 'hold') return state.latch === 1 ? 'hold ●' : 'hold';
   return c.role === 'off' ? '' : c.role;
