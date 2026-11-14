@@ -42,4 +42,5 @@ A MIDI keyboard plays it where the browser has Web MIDI: Chrome, Edge or Firefox
 ## Notes
 
 - In landscape the whole instrument fits one screen, on a computer or a tablet. On a phone held upright the sections stack and the keys stay at the bottom.
+- On a phone it keeps playing with the screen off, and you can stop it from the lock screen. If the phone cuts the sound anyway, one tap on start or on a key brings it back.
 - Your scenes are kept in the browser you saved them in. Use export and import to move them.
