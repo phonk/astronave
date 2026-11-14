@@ -4,6 +4,8 @@
 
 astronave is a two-voice synth that runs in a browser, in the spirit of the Buchla Music Easel. This manual goes through every part of it. If you only want to make sound, read [The first five minutes](#the-first-five-minutes) and come back when something puzzles you.
 
+[Versione italiana](MANUALE.md)
+
 - [The first five minutes](#the-first-five-minutes)
 - [How it is put together](#how-it-is-put-together)
 - [Controls in general](#controls-in-general)

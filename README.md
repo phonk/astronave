@@ -8,7 +8,7 @@ A two-voice touch synth that runs in your browser, in the spirit of the Buchla M
 
 ![astronave](screenshot.png)
 
-**The full [manual](MANUAL.md)** goes through every control, with a few patches to try.
+**The full [manual](MANUAL.md)** goes through every control, with a few patches to try. It is also in Italian: [manuale](MANUALE.md).
 
 ## Play
 
