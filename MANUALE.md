@@ -2,7 +2,7 @@
 
 *two voices, eight stages, no map*
 
-astronave è un synth a due voci che gira nel browser, ispirato al Buchla Music Easel. Questo manuale ne percorre ogni parte. Se vuoi solo far uscire del suono, leggi [I primi cinque minuti](#i-primi-cinque-minuti) e torna qui quando qualcosa non ti è chiaro.
+astronave è un synth a due voci che gira nel browser, ispirato al Buchla Music Easel. Se vuoi solo far uscire del suono, leggi [I primi cinque minuti](#i-primi-cinque-minuti) e torna qui quando qualcosa non ti è chiaro. Il resto spiega ogni controllo.
 
 I nomi dei controlli sono scritti come compaiono sullo schermo, cioè in inglese.
 
@@ -34,8 +34,8 @@ I nomi dei controlli sono scritti come compaiono sullo schermo, cioè in inglese
 1. Premi **start**. Finché non lo fai non suona niente: i browser non lasciano che una pagina faccia rumore prima che tu la tocchi.
 2. La scena che si apre, *slow comet*, suona da sola. Ascoltala un momento.
 3. Premi un tasto della tastiera in basso. Le voci seguono la nota. Fai scorrere il dito su e giù dentro il tasto: quella posizione è il **Touch**, e cambia il suono se la scena lo usa.
-4. Apri l'elenco delle scene in alto e provane qualcuna. Poi premi **dice** per una scena che nessuno ha mai sentito.
-5. Muovi **folds** su Synth A. Quello slider da solo è gran parte del carattere dello strumento.
+4. Apri l'elenco delle scene in alto e provane qualcuna. Poi premi **dice** per averne una a caso.
+5. Muovi **folds** su Synth A. È lo slider che cambia di più il timbro.
 6. Carica **Init** quando vuoi partire dal silenzio e costruire un suono tuo.
 
 ## Com'è fatto
@@ -52,7 +52,7 @@ Intorno ci sono le cose che le fanno muovere:
 - il **Touch**, cioè dove sta il tuo dito sul tasto;
 - **cross**, ogni voce sentita dall'altra.
 
-Nessuna di queste è collegata a qualcosa in partenza. È la matrice **patch** a decidere chi muove che cosa, e di quanto. Una scena è lo stato intero: tutti gli slider, il MARF, la patch.
+In partenza nessuna di queste è collegata a qualcosa. La matrice **patch** decide chi muove che cosa, e di quanto. Una scena conserva tutto: gli slider, il MARF e la patch.
 
 ## I controlli in generale
 
@@ -69,13 +69,13 @@ Nessuna di queste è collegata a qualcosa in partenza. È la matrice **patch** a
 - **panel, traces, surface** sono le tre viste dello stesso strumento. L'app ricorda l'ultima che hai usato.
 - **dice** crea una scena a caso. Le quattro parole accanto scelgono di che tipo:
   - **rhythm**: note corte sul pulser;
-  - **drone**: toni lunghi, bassi, movimento lento;
+  - **drone**: toni lunghi e bassi che si muovono piano;
   - **cross**: le due voci che si piegano forte a vicenda;
-  - **rain**: veloce, corto, sparso.
+  - **rain**: note corte e veloci, a tempi irregolari.
 
 ## Pulser
 
-È l'orologio dello strumento.
+Il pulser è l'orologio dello strumento.
 
 - **rate**: da 0,25 a 20 colpi al secondo.
 - **wobble**: quanto il valore random sposta la velocità. A zero il pulser è regolare.
@@ -116,7 +116,7 @@ Le due voci sono identiche. A è ambra, B è rosa.
 
 **gate**
 
-Il low pass gate è un filtro e un amplificatore insieme: mentre la nota muore diventa più piano e più scura allo stesso tempo, come un oggetto percosso.
+Il low pass gate è un filtro e un amplificatore insieme. Mentre la nota muore diventa più piano e più scura allo stesso tempo, come succede a un oggetto percosso.
 
 - **decay**: quanto dura un colpo, da 30 millisecondi a 4 secondi.
 - **peak**: la risonanza. Valori alti danno al colpo un bordo squillante, quasi vocale.
@@ -164,12 +164,12 @@ Il grafico mostra gli otto stadi da sinistra a destra. La linea ambra è A, la r
 - **keys**:
   - **off**: la tastiera non tocca il MARF;
   - **restart**: ogni tasto lo rimanda all'inizio;
-  - **address**: ogni tasto salta a uno stadio, quindi la tastiera sceglie gli stadi invece di scorrerli.
+  - **address**: ogni tasto salta a uno stadio, quindi gli stadi li scegli tu dalla tastiera.
 
 Sotto il grafico, una colonna per stadio:
 
 - **time**: trascina il numero su o giù. Col clock su *time* va da 30 millisecondi a 4 secondi. Col clock su *pulser* conta i colpi, da 1 a 8.
-- **ramp**: il livello scivola dallo stadio precedente a questo lungo il tempo dello stadio. Spento, salta.
+- **ramp**: il livello scivola dallo stadio precedente a questo lungo il tempo dello stadio. Quando è spento, il livello salta.
 - **pulse**: entrare in questo stadio conta come un evento. Fa battere il pulser quando è in modo *marf* o *burst* (e il suo *run* è acceso), e fa avanzare il sequencer quando questo segue il MARF.
 - **hold**: il MARF aspetta su questo stadio finché tieni premuto un tasto.
 - **stop**: il MARF si ferma alla fine di questo stadio finché non lo fai ripartire o non indirizzi uno stadio.
@@ -179,7 +179,7 @@ Pochi stadi con *ramp* acceso e tempi lunghi fanno un inviluppo o una curva lent
 
 ## Patch
 
-La matrice è dove lo strumento viene cablato. Le righe sono le sorgenti, le colonne le destinazioni. Ogni cella è un collegamento con una quantità da meno 100% a più 100%.
+La matrice collega tra loro le parti dello strumento. Le righe sono le sorgenti, le colonne le destinazioni. Ogni cella è un collegamento con una quantità da meno 100% a più 100%.
 
 - **Trascina una cella su o giù** per impostare la quantità. Ambra è positivo, rosa è negativo.
 - **Doppio clic** su una cella per azzerarla.
@@ -209,7 +209,7 @@ La matrice è dove lo strumento viene cablato. Le righe sono le sorgenti, le col
 | verb | la mandata al riverbero | tutta l'escursione |
 | bia a, bia b | bias | tutta l'escursione |
 
-La riga **cross** arriva solo a intonazione e folds: con lei B scuote l'intonazione o le pieghe di A alla velocità del suono, e viceversa. Quantità piccole danno un bordo ruvido, quantità grandi danno rumore e campane.
+La riga **cross** arriva solo a intonazione e folds: con lei B modula l'intonazione o le pieghe di A a frequenza audio, e viceversa. Quantità piccole danno un bordo ruvido, quantità grandi danno rumore e campane.
 
 ## Tastiera, scala e arpeggio
 
@@ -217,7 +217,7 @@ La tastiera è una fila di piastre, due ottave a partire dall'ottava che scegli.
 
 - **Touch**: la posizione verticale del dito sulla piastra. Più in basso è più forte. Decide con che forza viene colpita la nota, ed è anche la sorgente *touch* della patch.
 - **Tonica e scala**: i due menu a sinistra. La tonica ha un puntino ambra.
-- **scale only**: mostra solo le note della scala, così ogni piastra è una nota giusta.
+- **scale only**: mostra solo le note della scala, così nessuna piastra è fuori tonalità.
 - **− e +** spostano l'ottava.
 
 **arpeggio**
@@ -300,7 +300,7 @@ Le tue scene vivono nel browser in cui le hai salvate. Per portarle su un altro 
 
 Una tastiera MIDI suona lo strumento dove il browser ha Web MIDI: Chrome, Edge o Firefox su computer o su Android. Safari e iPhone non ce l'hanno.
 
-- Le note suonano le note.
+- I messaggi di nota suonano le note.
 - La **velocity** decide con che forza viene colpita la nota, e imposta il Touch.
 - L'**aftertouch** e la **mod wheel** muovono il Touch mentre la nota è tenuta.
 
@@ -320,7 +320,7 @@ Una tastiera MIDI suona lo strumento dove il browser ha Web MIDI: Chrome, Edge o
 
 **Suonare col Touch.** Collega *touch → fld a* a +60. Ora il punto in cui tocchi il tasto decide quanto è brillante la nota. Nella vista surface, un dito appoggiato su uno dei dischi touch fa lo stesso senza suonare una nota.
 
-**Voci che litigano.** Alza *fm* nella patch da una sorgente lenta qualsiasi, oppure porta *cross → pit a* a una quantità piccola. Poi muovi il pitch di B e ascolta A che cambia.
+**Voci che si disturbano.** Alza *fm* nella patch da una sorgente lenta qualsiasi, oppure porta *cross → pit a* a una quantità piccola. Poi muovi il pitch di B e ascolta A che cambia.
 
 ## Quando non esce suono
 

@@ -2,7 +2,7 @@
 
 *two voices, eight stages, no map*
 
-astronave is a two-voice synth that runs in a browser, in the spirit of the Buchla Music Easel. This manual goes through every part of it. If you only want to make sound, read [The first five minutes](#the-first-five-minutes) and come back when something puzzles you.
+astronave is a two-voice synth that runs in a browser, in the spirit of the Buchla Music Easel. If you only want to make sound, read [The first five minutes](#the-first-five-minutes) and come back when something puzzles you. The rest covers every control.
 
 [Versione italiana](MANUALE.md)
 
@@ -32,8 +32,8 @@ astronave is a two-voice synth that runs in a browser, in the spirit of the Buch
 1. Press **start**. Nothing sounds until you do: browsers do not let a page make sound before you touch it.
 2. The scene that opens, *slow comet*, plays by itself. Listen for a moment.
 3. Press a key on the keyboard at the bottom. The voices follow the note. Slide your finger up and down inside the key: that position is **Touch**, and it changes the sound if a scene uses it.
-4. Open the scene list at the top and try a few. Then press **dice** for a scene nobody has heard before.
-5. Move **folds** on Synth A. That one slider is most of the character of the instrument.
+4. Open the scene list at the top and try a few. Then press **dice** for a random one.
+5. Move **folds** on Synth A. It changes the tone more than any other slider.
 6. Load **Init** when you want to start from silence and build a sound yourself.
 
 ## How it is put together
@@ -50,7 +50,7 @@ Around them, the things that make them move:
 - **Touch**, where your finger is on a key;
 - **cross**, each voice heard by the other.
 
-None of these is wired to anything by default. The **patch** matrix decides which one moves what, and by how much. A scene is the whole state: every slider, the MARF, the patch.
+By default none of these is connected to anything. The **patch** matrix decides which one moves what, and by how much. A scene stores all of it: the sliders, the MARF and the patch.
 
 ## Controls in general
 
@@ -67,13 +67,13 @@ None of these is wired to anything by default. The **patch** matrix decides whic
 - **panel, traces, surface** are the three views of the same instrument. The app remembers the last one you used.
 - **dice** makes a random scene. The four words next to it choose what kind:
   - **rhythm**: short notes on the pulser;
-  - **drone**: long tones, low, slow movement;
+  - **drone**: long low tones that move slowly;
   - **cross**: the two voices bending each other hard;
-  - **rain**: fast, short, scattered.
+  - **rain**: fast, short notes at uneven times.
 
 ## Pulser
 
-The clock of the instrument.
+The pulser is the instrument's clock.
 
 - **rate**: 0.25 to 20 pulses per second.
 - **wobble**: how much the random value pushes the rate around. At zero the pulser is steady.
@@ -114,7 +114,7 @@ The two voices are identical. A is amber, B is pink.
 
 **gate**
 
-The low pass gate is a filter and an amplifier in one: as a note dies it gets quieter and darker together, like a struck object.
+The low pass gate is a filter and an amplifier in one. As a note dies it gets quieter and darker together, the way a struck object does.
 
 - **decay**: how long a hit lasts, 30 milliseconds to 4 seconds.
 - **peak**: resonance. High values give the hit a ringing, vocal edge.
@@ -162,12 +162,12 @@ The graph shows the eight stages left to right. The amber line is A, the pink li
 - **keys**:
   - **off**: the keyboard does not touch the MARF;
   - **restart**: every key sends it back to the start;
-  - **address**: each key jumps to a stage, so the keyboard picks stages instead of running through them.
+  - **address**: each key jumps to a stage, so you choose the stages from the keyboard.
 
 Under the graph, one column per stage:
 
 - **time**: drag the number up or down. With the clock on *time* it goes from 30 milliseconds to 4 seconds. With the clock on *pulser* it counts pulses, 1 to 8.
-- **ramp**: the level slides from the previous stage to this one over the stage's time. Off, it jumps.
+- **ramp**: the level slides from the previous stage to this one over the stage's time. When it is off, the level jumps.
 - **pulse**: entering this stage counts as an event. It fires the pulser when the pulser is in *marf* or *burst* mode (and its *run* is on), and steps the sequencer when the sequencer follows the MARF.
 - **hold**: the MARF waits on this stage for as long as a key is held.
 - **stop**: the MARF halts at the end of this stage until you restart it or address a stage.
@@ -177,7 +177,7 @@ A few stages with *ramp* on and long times make an envelope or a slow curve. All
 
 ## Patch
 
-The matrix is where the instrument is wired. Rows are sources, columns are destinations. Every cell is a connection with an amount from minus 100% to plus 100%.
+The matrix connects the parts of the instrument. Rows are sources, columns are destinations. Every cell is a connection with an amount from minus 100% to plus 100%.
 
 - **Drag a cell up or down** to set the amount. Amber is positive, pink is negative.
 - **Double-click** a cell to clear it.
@@ -207,7 +207,7 @@ The matrix is where the instrument is wired. Rows are sources, columns are desti
 | verb | the reverb send | the whole range |
 | bia a, bia b | bias | the whole range |
 
-The **cross** row only reaches pitch and folds: with it, B shakes A's pitch or A's folds at the speed of sound, and the other way round. Small amounts give a rough edge, large ones give noise and bells.
+The **cross** row only reaches pitch and folds: with it, B modulates A's pitch or A's folds at audio rate, and the other way round. Small amounts give a rough edge, large ones give noise and bells.
 
 ## Keyboard, scale and arpeggio
 
@@ -215,7 +215,7 @@ The keyboard is a row of plates, two octaves from the octave you choose.
 
 - **Touch**: the vertical position of your finger on a plate. Lower is stronger. It sets how hard the note is hit, and it is also the *touch* source in the patch.
 - **Root and scale**: the two menus on the left. The root note has an amber dot.
-- **scale only**: shows only the notes of the scale, so every plate is a right note.
+- **scale only**: shows only the notes of the scale, so no plate is out of key.
 - **− and +** move the octave.
 
 **arpeggio**
@@ -298,7 +298,7 @@ Your scenes live in the browser you saved them in. To move them to another brows
 
 A MIDI keyboard plays the instrument where the browser has Web MIDI: Chrome, Edge or Firefox on a computer or on Android. Safari and iPhone do not have it.
 
-- Notes play notes.
+- Note messages play notes.
 - **Velocity** sets how hard the note is hit, and sets Touch.
 - **Aftertouch** and the **mod wheel** move Touch while the note is held.
 
@@ -318,7 +318,7 @@ A MIDI keyboard plays the instrument where the browser has Web MIDI: Chrome, Edg
 
 **Play with Touch.** Patch *touch → fld a* at +60. Now where you touch a key decides how bright the note is. In the surface view, a finger resting on one of the touch discs does the same without playing a note.
 
-**Voices that fight.** Raise *fm* in the patch from any slow source, or drag *cross → pit a* to a small amount. Then move B's pitch and listen to A change.
+**Voices that disturb each other.** Raise *fm* in the patch from any slow source, or drag *cross → pit a* to a small amount. Then move B's pitch and listen to A change.
 
 ## When there is no sound
 
