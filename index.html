@@ -29,7 +29,7 @@
   --a:var(--amber); --b:var(--claret-hi); --line:#0E3A5E; --hair:#0E3A5E; --c:var(--amber);
   --font-mono:"Martian Mono",ui-monospace,"SF Mono",Menlo,monospace;
   --font-body:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
-  --row:19px;
+  --row:19px; --inkrgb:229,218,218; --bgrgb:2,4,15;
   color-scheme:dark;
 }
 html,body{background:var(--bg);color:var(--ink)}
@@ -155,7 +155,7 @@ button{font:inherit;color:inherit}
 #mla{stroke:var(--a)} #mlb{stroke:var(--b)}
 #mgraph polyline.dim{opacity:.3;stroke-width:1.1}
 #msep line{stroke:var(--navy);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
-#mskip rect{fill:rgba(2,4,15,.6)}
+#mskip rect{fill:rgba(var(--bgrgb),.6)}
 #mcur{fill:rgba(229,149,0,.0)}
 #mcur.live{fill:rgba(229,149,0,.10)}
 #mcur.halt{fill:rgba(194,58,106,.14)}
@@ -172,7 +172,7 @@ button{font:inherit;color:inherit}
 .mr{font-family:var(--font-mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);white-space:nowrap;display:flex;flex-direction:column;gap:3px}
 .sbar{display:block;height:2px;width:46px;background:var(--navy);position:relative;overflow:hidden}
 .sbar b{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--amber)}
-.mc{appearance:none;position:relative;height:18px;border:1px solid var(--navy);background:rgba(2,4,15,.5);padding:0;cursor:ns-resize;touch-action:none;box-shadow:inset 0 1px 3px rgba(0,0,0,.8)}
+.mc{appearance:none;position:relative;height:18px;border:1px solid var(--navy);background:rgba(var(--bgrgb),.5);padding:0;cursor:ns-resize;touch-action:none;box-shadow:inset 0 1px 3px rgba(0,0,0,.8)}
 .mc::before{content:"";position:absolute;left:50%;top:3px;bottom:3px;width:1px;background:var(--navy)}
 .mc i{position:absolute;top:4px;bottom:4px;left:50%;width:0;background:var(--amber);box-shadow:0 0 5px rgba(229,149,0,.45)}
 .mc.neg i{background:var(--claret-hi);box-shadow:0 0 5px rgba(194,58,106,.45)}
@@ -202,7 +202,7 @@ button{font:inherit;color:inherit}
 .octl{font-family:var(--font-mono);font-size:10px;min-width:28px;text-align:center}
 .karp{display:flex;flex-direction:column;gap:3px;border-top:1px dashed var(--navy);padding-top:4px}
 .keys{flex:1;display:flex;gap:3px;min-height:100px;min-width:0;touch-action:none;user-select:none;-webkit-user-select:none}
-.plate{flex:1 1 0;min-width:0;position:relative;border:1px solid var(--dim);background:rgba(229,218,218,.03);cursor:pointer;transition:background .5s}
+.plate{flex:1 1 0;min-width:0;position:relative;border:1px solid var(--dim);background:rgba(var(--inkrgb),.03);cursor:pointer;transition:background .5s}
 .plate.sh2{background:rgba(14,58,94,.35);border-color:var(--navy)}
 .plate .rt{position:absolute;left:50%;top:8px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--amber)}
 .plate span{position:absolute;left:0;right:0;bottom:6px;text-align:center;font:300 8.5px/1 var(--font-mono);color:var(--dim);white-space:nowrap;overflow:hidden}
@@ -293,8 +293,8 @@ button{font:inherit;color:inherit}
 .zed b{font-weight:400;color:var(--ink);letter-spacing:.1em}
 .zed[hidden]{display:none}
 #sfsvg{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
-#sfsvg .z{fill:rgba(229,218,218,.035);stroke:#2f6fd6;stroke-width:5;stroke-linejoin:round;transition:fill .4s}
-#sfsvg .z.note{fill:rgba(229,218,218,.06)}
+#sfsvg .z{fill:rgba(var(--inkrgb),.035);stroke:#2f6fd6;stroke-width:5;stroke-linejoin:round;transition:fill .4s}
+#sfsvg .z.note{fill:rgba(var(--inkrgb),.06)}
 #sfsvg .z.stage{fill:rgba(194,58,106,.12)}
 #sfsvg .z.pulse,#sfsvg .z.restart{fill:rgba(229,149,0,.12)}
 #sfsvg .z.touch,#sfsvg .z.hold{fill:rgba(14,58,94,.35)}
@@ -304,7 +304,7 @@ button{font:inherit;color:inherit}
 #sfsvg .z.held{stroke:var(--amber)}
 #sfsvg .z.sel{stroke:var(--ink);stroke-dasharray:14 8}
 #sfsvg text{font-family:var(--font-mono);fill:var(--dim);pointer-events:none;text-anchor:middle}
-#sfsvg .zl{font-size:22px;fill:#7fa6e6;letter-spacing:.06em}
+#sfsvg .zl{font-size:22px;fill:var(--night);letter-spacing:.06em}
 #sfsvg .zr{font-size:15px}
 #sfsvg .zr.root{fill:var(--amber)}
 #sfsvg .fing{fill:var(--ink);opacity:.9;pointer-events:none}
@@ -322,7 +322,7 @@ button{font:inherit;color:inherit}
 .tlab span{font:300 8.5px/1 var(--font-mono);color:var(--dim)}
 .tcv{display:block;width:100%;height:58px}
 .tdst{display:flex;flex-wrap:wrap;align-content:center;align-items:center;gap:4px 5px;padding:6px 12px 6px 10px;border-left:1px dashed rgba(14,58,94,.8)}
-.tch{appearance:none;position:relative;overflow:hidden;height:22px;padding:0 8px;border:1px solid var(--navy);background:rgba(2,4,15,.6);color:var(--ink);font:400 9.5px/1 var(--font-mono);letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none}
+.tch{appearance:none;position:relative;overflow:hidden;height:22px;padding:0 8px;border:1px solid var(--navy);background:rgba(var(--bgrgb),.6);color:var(--ink);font:400 9.5px/1 var(--font-mono);letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none}
 .tch i{position:absolute;left:0;top:0;bottom:0;background:rgba(229,149,0,.22);pointer-events:none}
 .tch.neg i{background:rgba(194,58,106,.28)}
 .tch em{font-style:normal;color:var(--amber);position:relative}
@@ -345,7 +345,7 @@ button{font:inherit;color:inherit}
 .dicegrp .fams{flex-wrap:nowrap!important}
 .vsw .rb{border-radius:0}
 .dgt{border-top:1px solid var(--navy)}
-.dgt rect.sg{fill:rgba(2,4,15,.4);stroke:var(--navy);stroke-width:1}
+.dgt rect.sg{fill:rgba(var(--bgrgb),.4);stroke:var(--navy);stroke-width:1}
 .dgt rect.sg.on{fill:rgba(229,149,0,.1)}
 .dgt .la,.dgt .lb{fill:none;stroke-width:1.8;vector-effect:non-scaling-stroke;stroke-linejoin:round}
 .dgt .la{stroke:var(--a)}.dgt .lb{stroke:var(--b)}
@@ -464,6 +464,30 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
 .plate.on{transform:none;background:rgba(210,87,127,.55);background-image:none;border-color:var(--wine);box-shadow:0 0 18px rgba(210,87,127,.25);transition:none}
 .plate.held{border-color:var(--amber)}
 
+/* ============ light: a white sheet with thin blue rules, as the first drawings had ============ */
+:root[data-theme="light"]{
+  --bg:#FFFFFF; --ink:#0C1524; --dim:#5B6577; --inkrgb:12,21,36; --bgrgb:255,255,255;
+  --navy:#2A66C8; --line:#2A66C8; --line2:#9DB9E6; --hair:#2A66C8; --night:#2A66C8; --navy-deep:#DCE8FA;
+  --amber:#C27A00; --claret-hi:#BE3568; --wine:#BE3568;
+  color-scheme:light;
+}
+[data-theme="light"] .sheet{border:1px solid var(--navy)}
+[data-theme="light"] .top{border-bottom:1px solid var(--navy)}
+[data-theme="light"] .strip{border-right:1px solid var(--navy)}
+[data-theme="light"] .strip:last-child{border-right:0}
+[data-theme="light"] .sub,[data-theme="light"] .karp,[data-theme="light"] .scope{border-top:1px dashed var(--line2);padding-top:5px}
+[data-theme="light"] .pop,[data-theme="light"] .tpop{background:#fff;border-color:var(--navy);box-shadow:0 18px 50px rgba(20,50,110,.2)}
+[data-theme="light"] .plate.on{background:rgba(190,53,104,.3);box-shadow:0 0 14px rgba(190,53,104,.2)}
+[data-theme="light"] .plate.sh2{background:rgba(42,102,200,.07);border-color:var(--line2)}
+[data-theme="light"] .pwr.on i{box-shadow:0 0 6px rgba(194,122,0,.6)}
+[data-theme="light"] .viz{opacity:1}
+[data-theme="light"] #sfsvg .zl{fill:var(--navy)}
+[data-theme="light"] .phonk-foot,[data-theme="light"] .phonk-foot a{color:var(--dim)}
+@media (max-width:640px) and (orientation:portrait){
+  [data-theme="light"] .sheet{border:0}
+  [data-theme="light"] .strip{border-right:0;border-top:1px solid var(--navy)}
+}
+
 /* popovers */
 .pop,.tpop{border:1px solid var(--line2);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.8);background:#04071a}
 .gname{font-size:11px;border-top-color:var(--line)}
@@ -491,7 +515,7 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
 
 /* surface */
 #sfsvg .z{stroke:var(--night);stroke-width:2.5;fill:rgba(74,140,196,.04)}
-#sfsvg .z.note{fill:rgba(229,218,218,.03)}
+#sfsvg .z.note{fill:rgba(var(--inkrgb),.03)}
 #sfsvg .z.stage{fill:rgba(210,87,127,.09)}
 #sfsvg .z.pulse,#sfsvg .z.restart{fill:rgba(229,149,0,.09)}
 #sfsvg .z.touch,#sfsvg .z.hold{fill:rgba(74,140,196,.1)}
@@ -550,6 +574,7 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
       <div class="vsw" role="group" aria-label="View"><button class="rb on" id="vwP" aria-pressed="true">Panel</button><button class="rb" id="vwD" aria-pressed="false">Traces</button><button class="rb" id="vwS" aria-pressed="false">Surface</button></div>
       <div class="dicegrp"><button class="rb" id="dice" title="Random scene"><i style="background:var(--amber)"></i>Dice</button>
       <div class="fams" id="fams" role="radiogroup" aria-label="Kind of random scene"></div></div>
+      <button class="rb" id="themeBtn" aria-pressed="false" title="Light or dark">Light</button>
     </div>
     <span class="sr" id="srInfo"></span>
     <button class="ib" id="lookBtn" aria-hidden="true" tabindex="-1"></button>
@@ -1780,7 +1805,17 @@ const NS = 'http://www.w3.org/2000/svg';
 const mk = (tag, at, par) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); par.appendChild(e); return e; };
 const wid = (r, c) => 'm' + r + '_' + c;
 const trkEl = document.getElementById('trk'), dgtEl = document.getElementById('dgt');
-const TR_COL = ['#E59500', '#C23A6A', '#E5DADA', '#E5DADA', '#E5DADA', '#E5DADA', '#9C9196'];
+const TR_VAR = ['--amber', '--claret-hi', '--ink', '--ink', '--ink', '--ink', '--dim'];
+let TR_COL = [], TR_LINE = '';
+function readTheme() { const cs = getComputedStyle(document.documentElement); TR_COL = TR_VAR.map(v => cs.getPropertyValue(v).trim()); TR_LINE = cs.getPropertyValue('--line').trim(); }
+readTheme();
+/* light or dark: the choice stays in this browser; dark until someone asks otherwise */
+const themeBtn = document.getElementById('themeBtn');
+function setTheme(light, keep) { if (light) document.documentElement.dataset.theme = 'light'; else delete document.documentElement.dataset.theme;
+  themeBtn.textContent = light ? 'Dark' : 'Light'; themeBtn.setAttribute('aria-pressed', light); readTheme();
+  if (keep) { try { localStorage.setItem('astronave-theme', light ? 'light' : 'dark'); } catch (e) {} } }
+{ let l = false; try { l = localStorage.getItem('astronave-theme') === 'light'; } catch (e) {} setTheme(l); }
+themeBtn.addEventListener('click', () => setTheme(document.documentElement.dataset.theme !== 'light', true));
 const TR_N = 220;
 const trHist = [0, 1, 2, 3, 4, 5, 6].map(() => new Float32Array(TR_N));
 let trPos = 0, trLanes = [], dgOn = false, dgDirty = true, dgT = 0, trAcc = 0;
@@ -1850,7 +1885,7 @@ function trDraw(L) {
   if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
   const g = cv.getContext('2d'), H = trHist[L.r], col = TR_COL[L.r];
   g.clearRect(0, 0, w, h);
-  g.strokeStyle = 'rgba(14,58,94,.7)'; g.lineWidth = dpr; g.beginPath(); g.moveTo(0, h - 4 * dpr); g.lineTo(w, h - 4 * dpr); g.stroke();
+  g.globalAlpha = 0.7; g.strokeStyle = TR_LINE; g.lineWidth = dpr; g.beginPath(); g.moveTo(0, h - 4 * dpr); g.lineTo(w, h - 4 * dpr); g.stroke();
   const used = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].some(c => mOK(L.r, c) && state[wid(L.r, c)]);
   g.beginPath();
   for (let i = 0; i < TR_N; i++) {
@@ -1868,7 +1903,7 @@ function dgTimeline() {
   const W = 1000, X0 = 60, X1 = 960, H = 74, top = 8;
   const wts = []; for (let k = 0; k < 8; k++) wts.push(Math.sqrt(state.fClk === 1 ? 1 + Math.round(state['f' + k + 't'] * 7) : marfSec(k)));
   const tot = wts.reduce((a, b) => a + b, 0); let x = X0; const xs = [];
-  mk('text', { x: 12, y: 22, fill: '#E5DADA' }, dgtEl).textContent = 'MARF'; mk('text', { x: 12, y: 36 }, dgtEl).textContent = state.fClk === 1 ? 'pulser' : 'time';
+  mk('text', { x: 12, y: 22, fill: 'currentColor' }, dgtEl).textContent = 'MARF'; mk('text', { x: 12, y: 36 }, dgtEl).textContent = state.fClk === 1 ? 'pulser' : 'time';
   mk('text', { x: 12, y: 50 }, dgtEl).textContent = marfLane === 'a' ? 'draw A' : 'draw B';
   for (let k = 0; k < 8; k++) {
     const w = wts[k] / tot * (X1 - X0); xs.push([x, x + w]);
@@ -1882,7 +1917,7 @@ function dgTimeline() {
     const pts = []; for (let k = 0; k < 8; k++) { const [x0, x1] = xs[k], v = state['f' + k + l], pv = state['f' + ((k + 7) % 8) + l]; if (state['f' + k + 'r']) pts.push(x0 + ',' + y(pv).toFixed(1), x1 + ',' + y(v).toFixed(1)); else pts.push(x0 + ',' + y(v).toFixed(1), x1 + ',' + y(v).toFixed(1)); }
     mk('polyline', { class: 'l' + l + (marfLane === l ? '' : ' dim'), points: pts.join(' '), fill: 'none' }, dgtEl);
   });
-  tl.cur = mk('line', { y1: top, y2: top + H, stroke: '#E5DADA', 'stroke-width': 1, opacity: 0 }, dgtEl);
+  tl.cur = mk('line', { y1: top, y2: top + H, stroke: 'currentColor', 'stroke-width': 1, opacity: 0 }, dgtEl);
   tl.dot = mk('circle', { r: 3.5, fill: 'var(--amber)', opacity: 0 }, dgtEl);
   tl.xs = xs; tl.y = y; tl.k = -1;
   const hit = mk('rect', { class: 'tc', x: X0, y: top, width: X1 - X0, height: H, fill: 'transparent' }, dgtEl);
