@@ -109,7 +109,6 @@ The two voices are identical. A is amber, B is pink.
 - **fine**: plus or minus one semitone, in cents. A few cents between A and B make them beat.
 - **shape**: the wave before folding. It moves from sine to triangle to saw to square.
 - **folds**: the wavefolder. At zero the wave passes untouched. As you raise it the wave is pushed past its limit and folds back on itself, again and again, and the sound gets brighter and more nasal.
-- **bias**: pushes the wave up or down before it folds. With bias at zero both halves of the wave fold the same way and the sound is hollow. Away from zero the two halves fold differently and the tone fills out. It only does something when folds is above zero.
 - **glide**: how slowly the pitch slides to a new note.
 
 **gate**
@@ -206,7 +205,6 @@ The matrix connects the parts of the instrument. Rows are sources, columns are d
 | fm | how much each voice frequency-modulates the other | |
 | tape | the echo time | about three times longer or shorter |
 | verb | the reverb send | the whole range |
-| bia a, bia b | bias | the whole range |
 
 The **cross** row only reaches pitch and folds: with it, B modulates A's pitch or A's folds at audio rate, and the other way round. Small amounts give a rough edge, large ones give noise and bells.
 
@@ -324,7 +322,7 @@ A MIDI keyboard plays the instrument where the browser has Web MIDI: Chrome, Edg
 
 **A bass line that changes by itself.** Load Init. Turn the pulser's *run* on. Set Synth A's *hit by* to pulser and its pitch to −12. In the patch, drag *seq → pit a* up to about +40. Move the five sequencer sliders. Then drag *rnd → fld a* up a little: every note gets a different brightness.
 
-**A drone that breathes.** Load Init. Set both voices to *drone*, raise B's level, detune B's *fine* by a few cents. Raise *folds* on both. Slow the *mod* rate right down and patch *mod → fld a* and *mod → bia b*. Add cistern send.
+**A drone that breathes.** Load Init. Set both voices to *drone*, raise B's level, detune B's *fine* by a few cents. Raise *folds* on both. Slow the *mod* rate right down and patch *mod → fld a* and *mod → fld b*. Add cistern send.
 
 **The MARF as a rhythm.** Set the pulser's mode to *marf*. Give the eight stages different times by dragging their numbers. Now the pulser fires at the start of every stage, so the pattern of long and short stages is the rhythm. Switch *pulse* off on a stage to leave a gap.
 
