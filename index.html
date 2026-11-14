@@ -1274,9 +1274,16 @@ function drawScenes() {
   userScenes.forEach(s => { const b = slist.querySelector(`[data-u="${CSS.escape(s.id)}"]`); if (b) b.textContent = s.name; });
   updSceneHead();
 }
+function sceneVals() { const v = { ...state }; if (state.arpOn === 1 && state.latch === 1 && held.length) v.held = held.slice(); return v; }
 function loadScene(vals, c) {
   commit(); const prev = lastSnap;
   applyState(vals); cur = c; dirty = false;
+  // a scene with arpeggio and hold on plays at once: with the notes it was saved with, or a chord of its scale
+  if (state.arpOn === 1 && state.latch === 1) {
+    if (Array.isArray(vals.held) && vals.held.length) held = vals.held.filter(n => n >= 0 && n < 128).slice(0, 16);
+    else if (!held.length) { const iv = SCALES[state.scale].iv, o = 12 * (oct + 1) + state.root, deg = d => o + iv[d % iv.length] + 12 * Math.floor(d / iv.length); held = [deg(0), deg(2), deg(4)]; }
+    down.clear(); sendHeld();
+  }
   const s = JSON.stringify(state);
   if (s !== prev) { hist.push(prev); if (hist.length > 40) hist.shift(); fut = []; }
   lastSnap = s; drawScenes(); updUndo();
@@ -1364,13 +1371,13 @@ document.getElementById('nameOk').addEventListener('click', confirmName);
 function confirmName() {
   const name = nameIn.value.trim().slice(0, 40);
   if (!name) { nameIn.focus(); return; }
-  if (nameMode === 'new') { commit(); const s = { id: newId(), name, vals: { ...state }, t: Date.now() }; cur = { type: 'u', id: s.id }; dirty = false; storePut(s); toast('Saved “' + name + '”'); }
+  if (nameMode === 'new') { commit(); const s = { id: newId(), name, vals: sceneVals(), t: Date.now() }; cur = { type: 'u', id: s.id }; dirty = false; storePut(s); toast('Saved “' + name + '”'); }
   else if (nameMode === 'ren') { const s = userScenes.find(x => x.id === cur.id); if (s) { storePut({ ...s, name }); toast('Renamed'); } }
   closeName();
 }
 document.getElementById('actOver').addEventListener('click', () => {
   const s = userScenes.find(x => x.id === cur.id); if (!s) return;
-  commit(); storePut({ ...s, vals: { ...state }, t: s.t }); dirty = false; updSceneHead(); toast('Overwrote “' + s.name + '”');
+  commit(); storePut({ ...s, vals: sceneVals(), t: s.t }); dirty = false; updSceneHead(); toast('Overwrote “' + s.name + '”');
 });
 const delBtn = document.getElementById('actDel');
 delBtn.addEventListener('click', () => {
