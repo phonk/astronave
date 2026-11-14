@@ -1111,28 +1111,56 @@ function sendScale() { post({ t: 'scale', s: SCALES[state.scale].iv, r: state.ro
 function sendAll() { const v = {}; for (const id in P) if (P[id].kind !== 'hid') v[id] = engVal(id); post({ t: 'all', v }); sendScale(); }
 const powerBtn = document.getElementById('power'), srInfo = document.getElementById('srInfo');
 function updPower() { const on = !!ctx && ctx.state === 'running'; powerBtn.classList.toggle('on', on); powerBtn.setAttribute('aria-pressed', on); powerBtn.setAttribute('aria-label', on ? 'Stop the sound' : 'Start the sound'); document.getElementById('powerTxt').textContent = on ? 'On' : 'Start'; srInfo.textContent = on ? Math.round(ctx.sampleRate / 1000) + ' kHz' : ''; }
-async function ensureAudio() {
-  if (ctx) { if (ctx.state === 'suspended') await ctx.resume(); updPower(); return; }
-  ctx = new (window.AudioContext || window.webkitAudioContext)();
-  analyser = ctx.createAnalyser(); analyser.fftSize = 1024; analyser.connect(ctx.destination);
+/* the screen going dark (or a call, or another app taking the sound) leaves the context suspended or,
+   on iPhone, "interrupted". wake it on the way back; if it will not wake, build a new one. */
+let wantOn = false, building = null;
+async function buildAudio() {
+  const old = ctx; ctx = null; node = null; eng = null;
+  if (old) { try { old.onstatechange = null; await old.close(); } catch (e) {} }
+  const c = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = c.createAnalyser(); analyser.fftSize = 1024; analyser.connect(c.destination);
   try {
     const url = URL.createObjectURL(new Blob([ENGINE + WORKLET], { type: 'text/javascript' }));
-    await ctx.audioWorklet.addModule(url);
-    node = new AudioWorkletNode(ctx, 'phonkless-easel', { numberOfInputs: 0, outputChannelCount: [2] });
+    await c.audioWorklet.addModule(url);
+    node = new AudioWorkletNode(c, 'phonkless-easel', { numberOfInputs: 0, outputChannelCount: [2] });
     node.port.onmessage = e => Object.assign(meter, e.data);
   } catch (err) {
     const E = new Function(ENGINE + ';return Engine;')();
-    eng = new E(ctx.sampleRate); eng.post = m => Object.assign(meter, m);
-    node = ctx.createScriptProcessor(1024, 0, 2);
+    eng = new E(c.sampleRate); eng.post = m => Object.assign(meter, m);
+    node = c.createScriptProcessor(1024, 0, 2);
     node.onaudioprocess = e => eng.process(e.outputBuffer.getChannelData(0), e.outputBuffer.getChannelData(1), e.outputBuffer.length);
   }
   node.connect(analyser);
+  ctx = c; c.onstatechange = () => updPower();
   sendAll();
   post({ t: 'held', n: held.slice() });
-  if (ctx.state === 'suspended') await ctx.resume();
-  updPower();
 }
-powerBtn.addEventListener('click', async () => { if (ctx && ctx.state === 'running') { await ctx.suspend(); updPower(); } else await ensureAudio(); });
+function wake(c, ms) {
+  return new Promise(res => {
+    if (c.state === 'running') return res(true);
+    let done = false; const fin = v => { if (!done) { done = true; res(v); } };
+    try { c.resume().then(() => fin(c.state === 'running'), () => fin(false)); } catch (e) { fin(false); }
+    setTimeout(() => fin(c.state === 'running'), ms);
+  });
+}
+async function ensureAudio() {
+  wantOn = true;
+  if (building) return building;
+  if (ctx && ctx.state === 'running') return;
+  building = (async () => {
+    try {
+      if (ctx && ctx.state !== 'closed' && await wake(ctx, 700)) return;
+      await buildAudio();
+      await wake(ctx, 700);
+    } finally { building = null; updPower(); }
+  })();
+  return building;
+}
+function comeBack() { if (document.visibilityState === 'visible' && wantOn && ctx && ctx.state !== 'running') wake(ctx, 700).then(() => updPower()); else if (ctx) updPower(); }
+document.addEventListener('visibilitychange', comeBack);
+window.addEventListener('pageshow', comeBack);
+window.addEventListener('focus', comeBack);
+powerBtn.addEventListener('click', async () => { if (ctx && ctx.state === 'running') { wantOn = false; await ctx.suspend(); updPower(); } else await ensureAudio(); });
 document.getElementById('pulseBtn').addEventListener('click', async () => { await ensureAudio(); post({ t: 'pulse' }); });
 
 /* ---------------- toast ---------------- */
