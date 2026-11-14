@@ -658,17 +658,21 @@ arpSeq(){
 }
 tick(src,vel){
  const p=this.p;
+ // src: 0 pulser, 1 key, 2 manual or marf pulse, 3 the arpeggiator's own clock (pulser stopped)
+ let arp=false;
  if(src!==1&&p.arpOn&&this.held.length){
   if(this.arpC%p.arpDiv===0){const sq=this.arpSeq();
    if(p.arpMode===3)this.arpI=Math.floor(Math.random()*sq.length);else this.arpI=(this.arpI+1)%sq.length;
-   this.keyNote=sq[this.arpI];}
+   this.keyNote=sq[this.arpI];arp=true;}
   this.arpC++;
  }
+ if(src===3){if(!arp)return;const fa=function(v,P){if(P.trig!==0){v.att=true;v.tv=vel;}};fa(this.va,p.a);fa(this.vb,p.b);return;}
  if((src!==1&&p.sAdv===0)||(src===1&&p.sAdv===1))this.step=(this.step+1)%p.sLen;
  if(src!==1)this.sh=Math.random();
  if(src===0&&p.fClk===1&&p.pMode===0)this.marfClock();
  const rest=src!==1&&p['g'+this.step]===0;
- const fire=function(v,P){const t=P.trig;if(rest&&t!==1)return;if(t===2||(t===0&&src!==1)||(t===1&&src===1)){v.att=true;v.tv=vel;}};
+ // an arpeggio step counts as a key press for the voices that are hit by keys
+ const fire=function(v,P){const t=P.trig;if(rest&&t!==1)return;if(t===2||(t===0&&src!==1)||(t===1&&(src===1||arp))){v.att=true;v.tv=vel;}};
  fire(this.va,p.a);fire(this.vb,p.b);
 }
 // ---- MARF: 8 stages, levels A and B, own time or pulser clock ----
@@ -755,6 +759,8 @@ process(L,R,n){
   if(p.pRun&&(p.pMode===0||this.burst>0)){
    const r=p.pRate*Math.pow(2,(this.rS-0.5)*4*p.pRnd+D[0]*3);this.pulPh+=r/sr;
    if(this.pulPh>=1){this.pulPh-=1;if(p.pMode===2){this.burst--;if(this.burst>0)this.tick(0,1);}else this.tick(0,1);}
+  }else if(p.arpOn&&this.held.length&&!p.pRun){
+   this.pulPh+=p.pRate*Math.pow(2,D[0]*3)/sr;if(this.pulPh>=1){this.pulPh-=1;this.tick(3,1);}
   }
   const tr=D[1]*12;
   const a=this.voice(this.va,p.a,tr+D[2]*24,D[3],D[4],this.pitA,this.decA,this.xA,this.xFA,D[8],this.lastB,D[11]);
