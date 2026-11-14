@@ -15,6 +15,8 @@
 .recp .reci{color:var(--ink);font-variant-numeric:tabular-nums;text-transform:none!important}
 .recp a.rb{text-decoration:none}
 .recp .rb{color:var(--amber)}
+.limrow{margin-top:6px;justify-content:space-between}
+.limrow .kv{color:var(--wine);min-width:60px}
 </style>
 <title>astronave</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -635,6 +637,10 @@ constructor(sr){
  this.rvBase=[1557,1617,1491,1422].map(function(x){return x*sr/44100;});
  this.dlN=Math.ceil(sr*2);this.dl=new Float32Array(this.dlN);this.dlW=0;this.dlLp=0;this.dlT=0.4*sr;this.wowPh=0;
  this.dcxL=0;this.dcyL=0;this.dcxR=0;this.dcyR=0;
+ // lookahead limiter, as in phonkless metal: the peaks of the next 5 ms set the gain before the sound gets there
+ this.limOn=true;this.LA=Math.round(sr*0.005);{let n=1;while(n<this.LA+4)n<<=1;this.LN=n;}this.ll=[new Float32Array(this.LN),new Float32Array(this.LN)];this.lw=0;
+ this.BL=16;this.nb=Math.ceil(this.LA/this.BL)+1;this.bp=new Float32Array(this.nb);this.bi=0;this.bc=0;this.bmax=0;this.lg=1;this.ltg=1;this.lgr=0;
+ this.lceil=Math.pow(10,-1/20);this.latt=Math.exp(-1/(0.0015*sr));this.lrel=Math.exp(-1/(0.12*sr));
  this.derive();
 }
 static vdef(){return {pitch:0,fine:0,shape:0.3,fold:0.5,bias:0,decay:0.4,peak:0.3,mode:0,trig:0,keys:1,glide:0.02,level:0.8,pan:0,decC:0.999,glideC:1,gl:0.7,gr:0.7};}
@@ -664,6 +670,7 @@ msg(d){
  else if(d.t==='pulse')this.tick(2,1);
  else if(d.t==='mrestart')this.marfRestart();
  else if(d.t==='gate')this.gate=!!d.on;
+ else if(d.t==='lim')this.limOn=!!d.on;
  else if(d.t==='scale'){this.scale=d.s;this.root=d.r;}
  else if(d.t==='held'){this.held=d.n;if(!this.held.length){this.arpI=-1;this.arpC=0;}}
 }
@@ -814,10 +821,19 @@ process(L,R,n){
   const oL=(dl+dOut+rl)*p.master,oR=(dr+dOut+rr)*p.master;
   const yL=oL-this.dcxL+0.995*this.dcyL;this.dcxL=oL;this.dcyL=yL;
   const yR=oR-this.dcxR+0.995*this.dcyR;this.dcxR=oR;this.dcyR=yR;
-  const oL2=Math.tanh(yL),oR2=Math.tanh(yR);L[i]=oL2;R[i]=oR2;if(oL2>this.pkL)this.pkL=oL2;else if(-oL2>this.pkL)this.pkL=-oL2;if(oR2>this.pkR)this.pkR=oR2;else if(-oR2>this.pkR)this.pkR=-oR2;
+  let oL2,oR2;
+  if(this.limOn){
+   const la=Math.max(Math.abs(yL),Math.abs(yR)),c=this.lceil;if(la>this.bmax)this.bmax=la;
+   if(++this.bc>=this.BL){this.bp[this.bi]=this.bmax;this.bi=(this.bi+1)%this.nb;this.bmax=0;this.bc=0;let pk=0;for(let j=0;j<this.nb;j++)if(this.bp[j]>pk)pk=this.bp[j];this.ltg=pk>c?c/pk:1;}
+   const tg=Math.min(this.ltg,la>c?c/la:1);this.lg=tg<this.lg?this.latt*this.lg+(1-this.latt)*tg:this.lrel*this.lg+(1-this.lrel)*tg;
+   const LM=this.LN-1,lw=this.lw;this.ll[0][lw&LM]=yL;this.ll[1][lw&LM]=yR;oL2=this.ll[0][(lw-this.LA)&LM]*this.lg;oR2=this.ll[1][(lw-this.LA)&LM]*this.lg;this.lw=lw+1;
+   oL2=oL2>c?c:oL2<-c?-c:oL2;oR2=oR2>c?c:oR2<-c?-c:oR2;
+   const gr=1-this.lg;if(gr>this.lgr)this.lgr=gr;
+  }else{oL2=Math.tanh(yL);oR2=Math.tanh(yR);}
+  L[i]=oL2;R[i]=oR2;if(oL2>this.pkL)this.pkL=oL2;else if(-oL2>this.pkL)this.pkL=-oL2;if(oR2>this.pkR)this.pkR=oR2;else if(-oR2>this.pkR)this.pkR=-oR2;
  }
  this.mc+=n;
- if(this.mc>=1024&&this.post){this.mc=0;this.post({t:'m',s:this.step,ea:p.a.mode===1?0.92:this.va.env,eb:p.b.mode===1?0.92:this.vb.env,r:rnd,m:mod,pl:this.pkL,pr:this.pkR,k:this.keyNote,fk:this.fk,fa:this.fA,fb:this.fB,fh:this.fHalt?1:0});this.pkL=0;this.pkR=0;}
+ if(this.mc>=1024&&this.post){this.mc=0;this.post({t:'m',s:this.step,ea:p.a.mode===1?0.92:this.va.env,eb:p.b.mode===1?0.92:this.vb.env,r:rnd,m:mod,pl:this.pkL,pr:this.pkR,k:this.keyNote,fk:this.fk,fa:this.fA,fb:this.fB,fh:this.fHalt?1:0,gr:this.lgr});this.pkL=0;this.pkR=0;this.lgr=0;}
 }
 }
 `;
@@ -989,7 +1005,7 @@ function stripHTML(m) {
       SUB('Out') + K(v + '.level') + K(v + '.pan') + RL('Keys', SEG(v + '.keys')) + RL('Hit by', SEG(v + '.trig')) + `</div></section>`;
   }
   return open + head(m) + SUB('Tape') + K('dTime') + K('dFb') + K('dMix') + SUB('Cistern') + K('vSize') + K('vDamp') + K('vMix') +
-    SUB('Master') + K('master') + `<div class="meters" aria-hidden="true"><span><i id="mL"></i></span><span><i id="mR"></i></span></div><div class="scope"><canvas id="scope" aria-label="Oscilloscope"></canvas></div></section>`;
+    SUB('Master') + K('master') + `<div class="meters" aria-hidden="true"><span><i id="mL"></i></span><span><i id="mR"></i></span></div><div class="krow limrow"><button class="chip" id="limBtn" aria-pressed="true" title="Holds the peaks at −1 dB without distortion. It is not part of a scene.">Limiter</button><span class="kv" id="limGr" aria-hidden="true"></span></div><div class="scope"><canvas id="scope" aria-label="Oscilloscope"></canvas></div></section>`;
 }
 const FLAGS = [['r', 'Ramp'], ['p', 'Pulse'], ['h', 'Hold'], ['x', 'Stop'], ['k', 'Skip']];
 function modsHTML() {
@@ -1186,6 +1202,7 @@ async function buildAudio() {
   ctx = c; c.onstatechange = () => updPower();
   sendAll();
   post({ t: 'held', n: held.slice() });
+  post({ t: 'lim', on: limOn });
 }
 function wake(c, ms) {
   return new Promise(res => {
@@ -1655,6 +1672,7 @@ function frame(ts) {
   const mL = document.getElementById('mL'), mR = document.getElementById('mR');
   mL.style.width = Math.min(1, meter.pl) * 100 + '%'; mR.style.width = Math.min(1, meter.pr) * 100 + '%';
   mL.classList.toggle('hot', meter.pl > 0.85); mR.classList.toggle('hot', meter.pr > 0.85);
+  { const g = running && limOn ? (meter.gr || 0) : 0; limHold = Math.max(g, limHold * 0.93); limGrEl.textContent = limHold > 0.006 ? '−' + (-20 * Math.log10(1 - Math.min(0.99, limHold))).toFixed(1) + ' db' : ''; }
   if (ts - rndT > 120) {
     rndT = ts; if (running) { rndHist.shift(); rndHist.push(meter.r); }
     const pts = []; rndHist.forEach((v, i) => { const y = (40 - v * 36).toFixed(1); pts.push((i * 5.4).toFixed(1) + ',' + y, ((i + 1) * 5.4 - 0.4).toFixed(1) + ',' + y); });
@@ -1685,6 +1703,14 @@ const BOOT = migrate(FACTORY["slow comet"]);
 for (const id in P) state[id] = id in BOOT ? BOOT[id] : P[id].def;
 lastSnap = JSON.stringify(state);
 
+
+
+/* limiter at the very end: a setting of the instrument, kept out of the scenes */
+let limOn = true, limHold = 0; try { limOn = localStorage.getItem('astronave-lim') !== '0'; } catch (e) {}
+const limBtn = document.getElementById('limBtn'), limGrEl = document.getElementById('limGr');
+function drawLim() { limBtn.classList.toggle('on', limOn); limBtn.setAttribute('aria-pressed', limOn); }
+limBtn.addEventListener('click', () => { limOn = !limOn; try { localStorage.setItem('astronave-lim', limOn ? '1' : '0'); } catch (e) {} drawLim(); post({ t: 'lim', on: limOn }); toast('Limiter ' + (limOn ? 'on' : 'off')); });
+drawLim();
 
 /* ---------------- recording: 24-bit WAV of exactly what comes out, kept until you save or discard it ---------------- */
 let recState = null, lastRec = null, recUrl = null, wakeLock = null;

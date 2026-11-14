@@ -20,7 +20,7 @@ Pick a scene from the list at the top, or press **dice** for a random one (rhyth
 
 ## Three views
 
-**panel**: every control on one screen. Pulser and sequencer, synth A, synth B, output (tape echo and the cistern reverb), then random and mod, the MARF and the patch matrix. It is the picture at the top of this page.
+**panel**: every control on one screen. Pulser and sequencer, synth A, synth B, output (tape echo, the cistern reverb and a limiter), then random and mod, the MARF and the patch matrix. It is the picture at the top of this page.
 
 **traces**: one lane per modulation source, with its signal scrolling live. On the right, the places it goes. Drag a tag up or down to set the amount, drag it to zero to cut it, press **+** to send the source somewhere new.
 

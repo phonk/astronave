@@ -135,6 +135,7 @@ The small light in the corner of each voice shows its envelope.
 - **tape**: an echo with a little wow. **time** from 50 milliseconds to 1.5 seconds, **feedback** for how many repeats, **send** for how much of the voices goes in.
 - **cistern**: a reverb. **size** for the length of the tail, **dark** to take the top off it, **send** for how much goes in.
 - **master**: the output volume, with two level lines under it.
+- **limiter**: the last thing before the output. It looks 5 milliseconds ahead and turns the level down just before a peak arrives, so nothing goes over −1 dB and nothing clips. The number next to it shows how much it is turning down. With the limiter off, loud passages are rounded off by a soft saturation instead, which is louder and dirtier. The limiter is a setting of the instrument and is not saved in scenes.
 
 ## Random and mod
 

@@ -137,6 +137,7 @@ La lucina nell'angolo di ogni voce mostra il suo inviluppo.
 - **tape**: un'eco con un po' di oscillazione da nastro. **time** da 50 millisecondi a 1,5 secondi, **feedback** per il numero di ripetizioni, **send** per quanto delle voci ci entra.
 - **cistern**: un riverbero. **size** per la lunghezza della coda, **dark** per toglierle gli acuti, **send** per quanto ci entra.
 - **master**: il volume d'uscita, con due linee di livello sotto.
+- **limiter**: l'ultima cosa prima dell'uscita. Guarda 5 millisecondi avanti e abbassa il livello un attimo prima che arrivi un picco, così niente supera −1 dB e niente distorce. Il numero accanto mostra di quanto sta abbassando. Con il limiter spento, i passaggi forti vengono invece arrotondati da una saturazione morbida, più forte e più sporca. Il limiter è un'impostazione dello strumento e non viene salvato nelle scene.
 
 ## Random e mod
 
