@@ -24,7 +24,7 @@ Pick a scene from the list at the top, or press **dice** for a random one (rhyth
 
 ![astronave, traces view](screenshot-traces.png)
 
-**surface**: a big touch surface made of zones. The **touch** layout has two fans of notes, one per hand, a thin outer arc for the eight MARF stages, a quarter disc under each palm that sends Touch only, and a round control in the middle for pulse, restart and hold. In a fan, the closer to the palm you touch, the stronger the note; a zone lights up more the harder you press. Press **edit zones** to change what a zone does: a note of the scale, a MARF stage, the pulser, restart, Touch only, or hold. There is also a plain grid layout.
+**surface**: a big touch surface made of zones. The **touch** layout has two fans of notes, one per hand, a thin outer arc for the eight MARF stages, a quarter disc under each palm that sends Touch only, and a round control in the middle for pulse, restart and hold. In a fan, the closer to the palm you touch, the stronger the note; a zone lights up more the harder you press. Press **edit zones** to change what a zone does: a note of the scale, a MARF stage, the pulser, restart, Touch only, or hold. There are two more layouts: **thunder**, slanted plates after the Buchla 222e, and a plain grid.
 
 ![astronave, surface view](screenshot-surface.png)
 

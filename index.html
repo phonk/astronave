@@ -592,7 +592,7 @@ body{font-weight:400;font-variant-numeric:tabular-nums}
     <div class="keys" id="keys"></div>
     <div class="surf" id="surf">
       <div class="sftool">
-        <div class="seg" id="sfLay" role="group" aria-label="Surface layout"><button class="chip" data-l="touch">Touch</button><button class="chip" data-l="grid">Grid</button></div>
+        <div class="seg" id="sfLay" role="group" aria-label="Surface layout"><button class="chip" data-l="touch">Touch</button><button class="chip" data-l="222e">Thunder</button><button class="chip" data-l="grid">Grid</button></div>
         <button class="chip" id="sfEdit" aria-pressed="false">Edit zones</button>
         <button class="chip" id="sfReset">Reset</button>
         <div class="zed" id="zed" hidden></div>
@@ -1868,6 +1868,8 @@ function dgFrame(ts, running) {
 
 /* ---------------- zone surface, configurable per zone ---------------- */
 const SF_ROLES = [['note', 'Note'], ['stage', 'Stage'], ['pulse', 'Pulse'], ['restart', 'Restart'], ['touch', 'Touch'], ['hold', 'Hold'], ['off', 'Off']];
+function sfMirror(z, id) { return { id, pts: z.pts.map(([x, y]) => [1200 - x, y]) }; }
+function sfHex(cx, cy, r) { const p = []; for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; p.push([cx + r * Math.cos(a), cy + r * Math.sin(a) * 0.95]); } return p; }
 const SF_LAYOUTS = (() => {
   const L = {};
   // touch: two fans of notes, one per hand, opening from the bottom; a thin outer arc for the MARF stages;
@@ -1893,6 +1895,26 @@ const SF_LAYOUTS = (() => {
   z.push(sector('tr', CXR, CY, 0, 146, 271.5, 358.5)); def.tr = { role: 'touch', v: 0 };
   [['pulse', 212, 328], ['restart', 332, 448], ['hold', 92, 208]].forEach(([role, a0, a1]) => { z.push(sector('c_' + role, 600, 300, 16, 104, a0, a1)); def['c_' + role] = { role, v: 0 }; });
   L.touch = { name: 'Touch', w: 1200, h: 560, zones: z, def };
+  {
+  // 222e: left half drawn, right half mirrored
+    const left = {};
+    const sl = 0.55, bar = (x, y0, y1) => [[x - sl * (y0 - 135), y0], [x + 70 - sl * (y0 - 135), y0], [x + 70 - sl * (y1 - 135), y1], [x - sl * (y1 - 135), y1]];
+    'ABCD'.split('').forEach((id, i) => { const x = 215 + i * 94; left[id] = { id, pts: [[x, 52], [x + 70, 52], [x + 70 - sl * 66, 118], [x - sl * 66, 118]] }; });
+    'LMNO'.split('').forEach((id, i) => { left[id] = { id, pts: bar(166 + i * 94, 136, 350) }; });
+    left.P = { id: 'P', pts: [[533, 150], [568, 198], [458, 402], [422, 352]] };
+    left.Q = { id: 'Q', pts: [[541, 308], [574, 356], [478, 548], [410, 548]] };
+    left.R = { id: 'R', pts: sfHex(200, 470, 92) };
+    const mid = { E: [[600, 44], [652, 122], [600, 192], [548, 122]], F: [[600, 206], [650, 276], [600, 346], [550, 276]], G: [[600, 362], [656, 450], [600, 540], [544, 450]] };
+    const pair = { A: 'K', B: 'J', C: 'I', D: 'H', L: 'Y', M: 'X', N: 'W', O: 'V', P: 'U', Q: 'T', R: 'S' };
+    const z = [];
+    Object.values(left).forEach(q => { z.push(q); z.push(sfMirror(q, pair[q.id])); });
+    Object.entries(mid).forEach(([id, pts]) => z.push({ id, pts }));
+    const def = {};
+    'LMNOPQTUVWXY'.split('').forEach((id, i) => def[id] = { role: 'note', v: i });
+    'ABCDHIJK'.split('').forEach((id, i) => def[id] = { role: 'stage', v: i });
+    Object.assign(def, { E: { role: 'pulse', v: 0 }, F: { role: 'restart', v: 0 }, G: { role: 'hold', v: 0 }, R: { role: 'touch', v: 0 }, S: { role: 'touch', v: 0 } });
+    L['222e'] = { name: 'Thunder', w: 1200, h: 600, zones: z, def };
+  }
   // grid: 3 rows x 8, rows go up a fourth (3 scale steps)
   const g = [], gd = {};
   for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++) {
@@ -1927,7 +1949,8 @@ function sfRender() {
     pg.setAttribute('points', z.pts.map(p => p.join(',')).join(' '));
     pg.setAttribute('class', 'z ' + c.role + (isRoot ? ' root' : '') + (sfSelZ === z.id && sfEdit ? ' sel' : '') + (c.role === 'note' && state.arpOn === 1 && held.includes(sfNote(c.v)) ? ' held' : ''));
     sfSvg.appendChild(pg);
-    const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', cx); t2.setAttribute('y', cy + 6); t2.setAttribute('class', 'zr' + (isRoot ? ' root' : '')); t2.textContent = sfText(c); sfSvg.appendChild(t2);
+    if (sfLayout === '222e') { const t = document.createElementNS(NS, 'text'); t.setAttribute('x', cx); t.setAttribute('y', cy - 6); t.setAttribute('class', 'zl'); t.textContent = z.id; sfSvg.appendChild(t); }
+    const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', cx); t2.setAttribute('y', cy + (sfLayout === '222e' ? 18 : 6)); t2.setAttribute('class', 'zr' + (isRoot ? ' root' : '')); t2.textContent = sfText(c); sfSvg.appendChild(t2);
     sfEls[z.id] = pg;
   });
   sfFingers = {};
@@ -1942,7 +1965,7 @@ function sfEditor() {
   ed.hidden = false;
   if (!sfSelZ) { ed.innerHTML = '<span>Tap a zone to set what it does</span>'; return; }
   const c = sfCfg(sfSelZ), hasV = c.role === 'note' || c.role === 'stage';
-  ed.innerHTML = `<b>Zone</b><div class="seg" role="group" aria-label="What this zone does">${SF_ROLES.map(([r, n]) => `<button class="chip${c.role === r ? ' on' : ''}" data-r="${r}" aria-pressed="${c.role === r}">${n}</button>`).join('')}</div>` +
+  ed.innerHTML = `<b>${sfLayout === '222e' ? sfSelZ : 'Zone'}</b><div class="seg" role="group" aria-label="What this zone does">${SF_ROLES.map(([r, n]) => `<button class="chip${c.role === r ? ' on' : ''}" data-r="${r}" aria-pressed="${c.role === r}">${n}</button>`).join('')}</div>` +
     (hasV ? `<button class="oct" id="zvDn" aria-label="Lower">−</button><span class="octl">${c.role === 'note' ? sfText(c) + ' · ' + (c.v >= 0 ? '+' : '') + c.v : c.v + 1}</span><button class="oct" id="zvUp" aria-label="Higher">+</button>` : '');
   ed.querySelectorAll('[data-r]').forEach(b => b.addEventListener('click', () => sfSet(sfSelZ, { role: b.dataset.r, v: b.dataset.r === 'stage' ? Math.max(0, Math.min(7, c.v)) : c.v })));
   if (hasV) {
